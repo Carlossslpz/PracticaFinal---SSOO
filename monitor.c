@@ -98,7 +98,7 @@ int main(int argc , char * argv[])
     //Creamos las variables
     pthread_t hilos_busqueda[10];
     char mensaje[1024];
-    int fd,i;
+    int fd,i,j;
 
     //Configuramos las variables pasadas por parametro
     fichero_log_global = argv[1];
@@ -185,17 +185,29 @@ int main(int argc , char * argv[])
 
     for (i = 0; i<listaUsers->n_users;i++)
     {
-        escribirLog("Analizando al usuario");
+        snprintf(mensaje,sizeof(mensaje),"Monitor con pid %d empieza a analizar al usuario %d",pid_programa,listaUsers->lista[i].id);
+        escribirLog(mensaje);
         //Creamos el usuario para
         user.id = listaUsers->lista[i].id;
 
         obtenerFechas(listaUsers->lista[i].fichero);
         pthread_create(&hilos_busqueda[0],NULL,buscarIngresosMaximos,listaUsers->lista[i].fichero);
-        pthread_join(hilos_busqueda[0],NULL);
+        pthread_create(&hilos_busqueda[1],NULL,buscarTotalIngresos,listaUsers->lista[i].fichero);
+        pthread_create(&hilos_busqueda[2],NULL,buscarRetirosMaximos,listaUsers->lista[i].fichero);
+        pthread_create(&hilos_busqueda[3],NULL,buscarTotalRetiros,listaUsers->lista[i].fichero);
 
-        for (int j = 0; i<listaFechas.index;i++)
+
+        pthread_join(hilos_busqueda[0],NULL);
+        pthread_join(hilos_busqueda[1],NULL);
+        pthread_join(hilos_busqueda[2],NULL);
+        pthread_join(hilos_busqueda[3],NULL);
+        //Una vez que hemos terminado de leer el fichero lo cerramos
+        snprintf(mensaje,sizeof(mensaje),"Monitor con pid %d ha terminado de analizar al usuario %d",pid_programa,listaUsers->lista[i].id);
+        escribirLog(mensaje);
+
+        for (j = 0; j<listaFechas.index;j++)
         {
-            free(listaFechas.lista[i]);
+            free(listaFechas.lista[j]);
         }
       
     }
@@ -413,7 +425,256 @@ void * buscarIngresosMaximos(void * arg)
 
 }
 
+void * buscarTotalIngresos(void * arg)
+{
+    //Bloqueamos un hilo
+    sem_wait(semaforo_hilos);
+    semaforos_usados[0]=1;
 
+    //Creamos las variables
+    int i,j;
+    FILE * fichero;  
+    char mensaje[400],linea[255];
+    char *fecha,* id,*operacion,*cantidad;
+    char *nombre_fichero;
+
+    nombre_fichero = (char *)arg;
+
+    escribirLog("Monitor empieza a buscar ingresos totales sospechosos");
+    fichero = fopen(nombre_fichero,"r");
+    if (fichero == NULL)
+    {
+        snprintf(mensaje,sizeof(mensaje),"Error %d al abrir el fichero %s",errno,nombre_fichero);
+        escribirLog(mensaje);
+        //En caso de error cerramos el programa ya que sin poder acceder al log no tiene sentido que funcione
+        sem_post(semaforo_hilos);
+        semaforos_usados[0]=0;
+        //Si no puedo abrir el fichero de transacciones no puedo hacer nada asi que me muero
+        kill(pid_programa,SIGTERM);
+        return NULL;
+    }
+
+    
+    //Buscamos el maximo de cada fecha
+    for ( i = 0; i<listaFechas.index;i++)
+    {
+        //Reiniciamos el fichero para leerlo de nuevo
+        rewind(fichero);
+       
+        //Reiniciamos los contadores de ingresos de USUARIO_MONITORpara cada fecha
+        user.numero_ingresos = 0;
+
+        while (fgets(linea,sizeof(linea),fichero) != NULL)
+        {
+            //Quito el \n
+            linea[strcspn(linea,"\n")] = 0;
+
+            //Obtenemos los datos de cada linea
+            fecha = strtok(linea,"-");
+            operacion = strtok(NULL,"-");
+            id = strtok(NULL,"-");
+            cantidad = strtok(NULL,"-");
+
+            //Si la fecha no coincide con la que buscamos o la operacion no es un ingreso pasamos
+            if (strcmp(fecha,listaFechas.lista[i]) != 0 || strcmp(operacion,"DEPOSITO") != 0) continue;
+            
+              //Vemos si el id de USUARIO_MONITOR ya existe en la lista de USUARIO_MONITORs
+            
+            //Si existe lo sumamos a la cantidad ingresada
+            user.numero_ingresos += 1;
+
+            //Si el conjunto de cantidad ingresada es mayor al maximo lo notificamos
+            if (user.numero_ingresos >= maximos.maximo_ingresos)
+            {
+                //Si el ingreso es mayor al maximo lo notificamos
+                snprintf(mensaje,sizeof(mensaje),"1-ALERTA: USUARIO CON ID %s HA SUPERADO EL TOTAL DE INGRESOS EL DIA %s\n",id,fecha);
+                escribirBanco(mensaje);              
+            }
+              
+            
+            
+        }
+    }
+
+    //Una vez que hemos terminado de leer el fichero lo cerramos
+    fclose(fichero);
+
+    escribirLog("Monitor ha terminado de buscar ingresos maximos raros");
+    //Liberamos el hilo
+    sem_post(semaforo_hilos);
+    semaforos_usados[0]=1;
+    return NULL;
+
+}
+
+//----------------------------------------------------------RETIROS---------------------------------------------------------------------
+
+void * buscarRetirosMaximos(void * arg)
+{
+    //Bloqueamos un hilo
+    sem_wait(semaforo_hilos);
+    semaforos_usados[0]=1;
+
+    //Creamos las variables
+    int i,j;
+    FILE * fichero;  
+    char mensaje[400],linea[255];
+    char *fecha,* id,*operacion,*cantidad;
+    char *nombre_fichero;
+
+    nombre_fichero = (char *)arg;
+
+    escribirLog("Monitor empieza a buscar retiros maximos sospechosos...");
+    fichero = fopen(nombre_fichero,"r");
+    if (fichero == NULL)
+    {
+        snprintf(mensaje,sizeof(mensaje),"Error %d al abrir el fichero %s",errno,nombre_fichero);
+        escribirLog(mensaje);
+        //En caso de error cerramos el programa ya que sin poder acceder al log no tiene sentido que funcione
+        sem_post(semaforo_hilos);
+        semaforos_usados[0]=0;
+        //Si no puedo abrir el fichero de transacciones no puedo hacer nada asi que me muero
+        kill(pid_programa,SIGTERM);
+        return NULL;
+    }
+
+    
+    //Buscamos el maximo de cada fecha
+    for ( i = 0; i<listaFechas.index;i++)
+    {
+        //Reiniciamos el fichero para leerlo de nuevo
+        rewind(fichero);
+       
+        //Reiniciamos los contadores de ingresos de USUARIO_MONITORpara cada fecha
+        user.cantidad_retirada = 0;
+
+        while (fgets(linea,sizeof(linea),fichero) != NULL)
+        {
+            //Quito el \n
+            linea[strcspn(linea,"\n")] = 0;
+
+            //Obtenemos los datos de cada linea
+            fecha = strtok(linea,"-");
+            operacion = strtok(NULL,"-");
+            id = strtok(NULL,"-");
+            cantidad = strtok(NULL,"-");
+
+            //Si la fecha no coincide con la que buscamos o la operacion no es un ingreso pasamos
+            if (strcmp(fecha,listaFechas.lista[i]) != 0 || strcmp(operacion,"RETIRO") != 0) continue;
+            
+            //Vemos si el id de USUARIO_MONITOR ya existe en la lista de USUARIO_MONITORs
+            
+            //Si existe lo sumamos a la cantidad ingresada
+            user.cantidad_retirada += atof(cantidad);
+
+                    //Si el conjunto de cantidad ingresada es mayor al maximo lo notificamos
+            if (user.cantidad_retirada >= maximos.maxima_cantidad_retiro)
+            {
+                //Si el ingreso es mayor al maximo lo notificamos
+                snprintf(mensaje,sizeof(mensaje),"1-ALERTA: USUARIO CON ID %s HA SUPERADO LA MAXIMA CANTIDAD DE RETIROS EL DIA %s\n",id,fecha);
+                escribirBanco(mensaje);              
+            }
+                
+            
+            
+        }
+    }
+
+    //Una vez que hemos terminado de leer el fichero lo cerramos
+    fclose(fichero);
+
+    escribirLog("Monitor ha terminado de buscar retiros maximos sospechosos...");
+    //Liberamos el hilo
+    sem_post(semaforo_hilos);
+    semaforos_usados[0]=1;
+    return NULL;
+
+}
+void * buscarTotalRetiros(void * arg)
+{
+    //Bloqueamos un hilo
+    sem_wait(semaforo_hilos);
+    semaforos_usados[0]=1;
+
+    //Creamos las variables
+    int i,j;
+    FILE * fichero;  
+    char mensaje[400],linea[255];
+    char *fecha,* id,*operacion,*cantidad;
+    char *nombre_fichero;
+
+    nombre_fichero = (char *)arg;
+
+    escribirLog("Monitor empieza a buscar total de retiros sospechosos...");
+    fichero = fopen(nombre_fichero,"r");
+    if (fichero == NULL)
+    {
+        snprintf(mensaje,sizeof(mensaje),"Error %d al abrir el fichero %s",errno,nombre_fichero);
+        escribirLog(mensaje);
+        //En caso de error cerramos el programa ya que sin poder acceder al log no tiene sentido que funcione
+        sem_post(semaforo_hilos);
+        semaforos_usados[0]=0;
+        //Si no puedo abrir el fichero de transacciones no puedo hacer nada asi que me muero
+        kill(pid_programa,SIGTERM);
+        return NULL;
+    }
+
+    
+    //Buscamos el maximo de cada fecha
+    for ( i = 0; i<listaFechas.index;i++)
+    {
+        //Reiniciamos el fichero para leerlo de nuevo
+        rewind(fichero);
+       
+        //Reiniciamos los contadores de ingresos de USUARIO_MONITORpara cada fecha
+        user.num_retiros = 0;
+
+        while (fgets(linea,sizeof(linea),fichero) != NULL)
+        {
+            //Quito el \n
+            linea[strcspn(linea,"\n")] = 0;
+
+            //Obtenemos los datos de cada linea
+            fecha = strtok(linea,"-");
+            operacion = strtok(NULL,"-");
+            id = strtok(NULL,"-");
+            cantidad = strtok(NULL,"-");
+
+            //Si la fecha no coincide con la que buscamos o la operacion no es un ingreso pasamos
+            if (strcmp(fecha,listaFechas.lista[i]) != 0 || strcmp(operacion,"RETIRO") != 0) continue;
+            
+              //Vemos si el id de USUARIO_MONITOR ya existe en la lista de USUARIO_MONITORs
+            
+            //Si existe lo sumamos a la cantidad ingresada
+            user.num_retiros += 1;
+
+            //Si el conjunto de cantidad ingresada es mayor al maximo lo notificamos
+            if (user.num_retiros >= maximos.maximo_retiros)
+            {
+                //Si el ingreso es mayor al maximo lo notificamos
+                snprintf(mensaje,sizeof(mensaje),"1-ALERTA: USUARIO CON ID %s HA SUPERADO EL TOTAL DE RETIROS EL DIA %s\n",id,fecha);
+                escribirBanco(mensaje);              
+            }
+            
+
+                
+            
+            
+        }
+    }
+
+    //Una vez que hemos terminado de leer el fichero lo cerramos
+    fclose(fichero);
+
+    escribirLog("Monitor ha terminado de buscar total de retiros sospechosos...");
+    //Liberamos el hilo
+    sem_post(semaforo_hilos);
+    semaforos_usados[0]=1;
+    return NULL;
+
+}
+
+//-----------------------------------------------------------TRANSFERENCIAS-------------------------------------------------------------
 
 //Nombre: escribirLog.
 //Retorno: void.
@@ -545,6 +806,9 @@ void leerMemoriaCompartida()
         semaforos_usados[1] = 0;
         kill(SIGTERM,pid_programa);
     }
+
+    
+
     //Liberamos el semaforo
     sem_post(semaforo_memoria);
     semaforos_usados[1] = 0;
