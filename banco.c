@@ -148,6 +148,7 @@ void cerrarBanco()
     fd = open(FIFO_PROGRAMAS_BANCO,O_WRONLY);
     write(fd,"salir",5);
     close(fd);
+    
     //Esperamos a que el hilo de mensajes se cierre
     pthread_join(hilo_mensajes,NULL);
 
@@ -360,7 +361,23 @@ void * leerMensajes(void * arg)
                 
                 else if (mensaje[0] == '1') agregarPila(mensaje);
                     
-                 
+                
+                else if (mensaje[0] == '3')
+                {
+                    //En este caso es un mensaje de error del monitor, por tanto lo guardamos en el log
+                    escribirLog(mensaje);
+                }
+                else if (mensaje[0] == '4')
+                {
+                    //En este caso es un mensaje de error del monitor, por tanto lo guardamos en el log
+                    escribirLog(mensaje);
+                }
+                
+                else if (mensaje[0] == '5')
+                {
+                    /* code */
+                }
+                
                 else if (strcmp(mensaje,"salir")==0 )
                 {
                     //Cerramos el extremo de lectura, ya que se ha acabado el programa y nadie mas nos va a escribir

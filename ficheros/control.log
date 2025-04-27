@@ -1006,3 +1006,173 @@
 [Fri Apr 25 12:56:16 2025] - Monitor con pid 9963 ha terminado
 [Fri Apr 25 12:56:22 2025] - Cerrando banco de manera segura
 [Fri Apr 25 12:56:25 2025] - ----------------------
+[Sat Apr 26 12:13:32 2025] - ---------------------------
+[Sat Apr 26 12:13:32 2025] - Inciando banco
+[Sat Apr 26 12:13:32 2025] - Se esta cargando la configuracion del banco
+[Sat Apr 26 12:13:32 2025] - Se ha abierto el fichero propertys.conf
+[Sat Apr 26 12:13:32 2025] - Se ha cargado la configuracion del programa
+[Sat Apr 26 12:13:32 2025] - Se ha cerrado el fichero propertys.conf
+[Sat Apr 26 12:13:34 2025] - Iniciando memoria compartida...
+[Sat Apr 26 12:13:34 2025] - Se ha creado la memoria compartida
+[Sat Apr 26 12:13:37 2025] - El usuario con PID 4745 ha inciado sesion
+[Sat Apr 26 12:13:37 2025] - El usuario con PID 4745 ha abierto la memoria compartida
+[Sat Apr 26 12:13:37 2025] - El usuario con PID 4745 ha leido la memoria compartida
+[Sat Apr 26 12:13:41 2025] - El usuario con PID 4745 ha iniciado un deposito
+[Sat Apr 26 12:13:44 2025] - El usuario con PID 4745 ha depositado dinero
+[Sat Apr 26 12:14:03 2025] - El usuario con PID 4745 ha cerrado sesion
+[Sat Apr 26 12:14:09 2025] - Monitor iniciado con pid 4769
+[Sat Apr 26 12:14:09 2025] - Monitor con pid 4769 empieza a leer la memoria compartida
+[Sat Apr 26 12:14:09 2025] - Monitor con pid 4769 ha terminado de leer la memoria compartida
+[Sat Apr 26 12:14:09 2025] - Monitor con pid 4769 empieza a analizar al usuario 1
+[Sat Apr 26 12:14:09 2025] - Se empieza a generar listas de datos...
+[Sat Apr 26 12:14:09 2025] - Se han generado las listas de datos...
+[Sat Apr 26 12:14:09 2025] - Monitor empieza a buscar ingresos maximos
+[Sat Apr 26 12:14:09 2025] - Monitor ha terminado de buscar ingresos maximos raros
+[Sat Apr 26 12:14:09 2025] - Monitor empieza a buscar ingresos totales sospechosos
+[Sat Apr 26 12:14:09 2025] - Monitor ha terminado de buscar ingresos maximos raros
+[Sat Apr 26 12:14:09 2025] - Monitor empieza a buscar retiros maximos sospechosos...
+[Sat Apr 26 12:14:09 2025] - Monitor empieza a buscar total de retiros sospechosos...
+[Sat Apr 26 12:14:09 2025] - Monitor ha terminado de buscar total de retiros sospechosos...
+[Sat Apr 26 12:14:09 2025] - Monitor ha terminado de buscar retiros maximos sospechosos...
+[Sat Apr 26 12:14:09 2025] - Monitor con pid 4769 ha terminado de analizar al usuario 1
+[Sat Apr 26 12:14:09 2025] - Monitor con pid 4769 empieza a analizar al usuario 2
+[Sat Apr 26 12:14:09 2025] - Se empieza a generar listas de datos...
+[Sat Apr 26 12:14:09 2025] - Se han generado las listas de datos...
+[Sat Apr 26 12:14:09 2025] - Monitor empieza a buscar ingresos maximos
+[Sat Apr 26 12:14:09 2025] - Monitor ha terminado de buscar ingresos maximos raros
+[Sat Apr 26 12:14:09 2025] - Monitor empieza a buscar ingresos totales sospechosos
+[Sat Apr 26 12:14:09 2025] - Monitor ha terminado de buscar ingresos maximos raros
+[Sat Apr 26 12:14:09 2025] - Monitor empieza a buscar total de retiros sospechosos...
+[Sat Apr 26 12:14:09 2025] - Monitor ha terminado de buscar total de retiros sospechosos...
+[Sat Apr 26 12:14:09 2025] - Monitor empieza a buscar retiros maximos sospechosos...
+[Sat Apr 26 12:14:09 2025] - Monitor ha terminado de buscar retiros maximos sospechosos...
+[Sat Apr 26 12:14:09 2025] - Monitor con pid 4769 ha terminado de analizar al usuario 2
+[Sat Apr 26 12:14:09 2025] - Monitor con pid 4769 empieza a analizar al usuario 3
+[Sat Apr 26 12:14:09 2025] - Se empieza a generar listas de datos...
+[Sat Apr 26 12:14:09 2025] - Se han generado las listas de datos...
+[Sat Apr 26 12:14:09 2025] - Monitor empieza a buscar ingresos maximos
+[Sat Apr 26 12:14:09 2025] - Monitor empieza a buscar ingresos totales sospechosos
+[Sat Apr 26 12:14:09 2025] - Monitor ha terminado de buscar ingresos maximos raros
+[Sat Apr 26 12:14:09 2025] - Monitor empieza a buscar total de retiros sospechosos...
+[Sat Apr 26 12:14:09 2025] - Monitor ha terminado de buscar total de retiros sospechosos...
+[Sat Apr 26 12:14:09 2025] - Monitor ha terminado de buscar ingresos maximos raros
+[Sat Apr 26 12:14:09 2025] - Monitor empieza a buscar retiros maximos sospechosos...
+[Sat Apr 26 12:14:09 2025] - Monitor ha terminado de buscar retiros maximos sospechosos...
+[Sat Apr 26 12:14:09 2025] - Monitor con pid 4769 ha terminado de analizar al usuario 3
+[Sat Apr 26 12:14:09 2025] - Monitor con pid 4769 empieza a analizar al usuario 4
+[Sat Apr 26 12:14:09 2025] - Se empieza a generar listas de datos...
+[Sat Apr 26 12:14:09 2025] - Se han generado las listas de datos...
+[Sat Apr 26 12:14:09 2025] - Monitor empieza a buscar ingresos maximos
+[Sat Apr 26 12:14:09 2025] - Monitor ha terminado de buscar ingresos maximos raros
+[Sat Apr 26 12:14:09 2025] - Monitor empieza a buscar ingresos totales sospechosos
+[Sat Apr 26 12:14:09 2025] - Monitor ha terminado de buscar ingresos maximos raros
+[Sat Apr 26 12:14:09 2025] - Monitor empieza a buscar retiros maximos sospechosos...
+[Sat Apr 26 12:14:09 2025] - Monitor ha terminado de buscar retiros maximos sospechosos...
+[Sat Apr 26 12:14:09 2025] - Monitor empieza a buscar total de retiros sospechosos...
+[Sat Apr 26 12:14:09 2025] - Monitor ha terminado de buscar total de retiros sospechosos...
+[Sat Apr 26 12:14:09 2025] - Monitor con pid 4769 ha terminado de analizar al usuario 4
+[Sat Apr 26 12:14:09 2025] - Monitor con pid 4769 ha terminado
+[Sat Apr 26 12:14:43 2025] - Cerrando banco de manera segura
+[Sat Apr 26 12:14:45 2025] - ----------------------
+[Sun Apr 27 13:01:29 2025] - ---------------------------
+[Sun Apr 27 13:01:29 2025] - Inciando banco
+[Sun Apr 27 13:01:29 2025] - Se esta cargando la configuracion del banco
+[Sun Apr 27 13:01:29 2025] - Se ha abierto el fichero propertys.conf
+[Sun Apr 27 13:01:29 2025] - Se ha cargado la configuracion del programa
+[Sun Apr 27 13:01:29 2025] - Se ha cerrado el fichero propertys.conf
+[Sun Apr 27 13:01:31 2025] - Iniciando memoria compartida...
+[Sun Apr 27 13:01:31 2025] - Se ha creado la memoria compartida
+[Sun Apr 27 13:01:33 2025] - Se ha iniciado el proceso de registro de un nuevo usuario
+[Sun Apr 27 13:01:33 2025] - Se ha iniciado init cuenta en modo 0
+[Sun Apr 27 13:02:52 2025] - Cerrando banco de manera segura
+[Sun Apr 27 13:02:54 2025] - ----------------------
+[Sun Apr 27 13:03:05 2025] - Cerrando banco de manera forzada
+[Sun Apr 27 13:03:05 2025] - Cerrando banco de manera forzada
+
+[Sun Apr 27 13:03:08 2025] - ----------------------
+[Sun Apr 27 13:03:11 2025] - Cerrando banco de manera forzada
+[Sun Apr 27 13:03:11 2025] - Cerrando banco de manera forzada
+
+[Sun Apr 27 13:03:13 2025] - ----------------------
+[Sun Apr 27 13:03:32 2025] - ---------------------------
+[Sun Apr 27 13:03:32 2025] - Inciando banco
+[Sun Apr 27 13:03:32 2025] - Se esta cargando la configuracion del banco
+[Sun Apr 27 13:03:32 2025] - Se ha abierto el fichero propertys.conf
+[Sun Apr 27 13:03:32 2025] - Se ha cargado la configuracion del programa
+[Sun Apr 27 13:03:32 2025] - Se ha cerrado el fichero propertys.conf
+[Sun Apr 27 13:03:34 2025] - Iniciando memoria compartida...
+[Sun Apr 27 13:03:34 2025] - Se ha creado la memoria compartida
+[Sun Apr 27 13:03:37 2025] - Se ha iniciado el proceso de registro de un nuevo usuario
+[Sun Apr 27 13:03:37 2025] - Se ha iniciado init cuenta en modo 0
+[Sun Apr 27 13:03:37 2025] - Init cuentas ha abierto la memoria compartida
+[Sun Apr 27 13:03:37 2025] - Init cuentas ha leido la memoria compartida
+[Sun Apr 27 13:03:41 2025] - Se ha creado un nuevo usuario
+[Sun Apr 27 13:03:41 2025] - Se ha creado el directorio para el nuevo usuario
+[Sun Apr 27 13:03:45 2025] - Se ha cerrado init cuenta en modo 0
+[Sun Apr 27 13:04:31 2025] - Fallo 14 del usuario con PID 5824 al abrir el archivo (null)
+[Sun Apr 27 13:04:49 2025] - Cerrando banco de manera segura
+[Sun Apr 27 13:04:51 2025] - ----------------------
+[Sun Apr 27 13:14:47 2025] - ---------------------------
+[Sun Apr 27 13:14:47 2025] - Inciando banco
+[Sun Apr 27 13:14:47 2025] - Se esta cargando la configuracion del banco
+[Sun Apr 27 13:14:47 2025] - Se ha abierto el fichero propertys.conf
+[Sun Apr 27 13:14:47 2025] - Se ha cargado la configuracion del programa
+[Sun Apr 27 13:14:47 2025] - Se ha cerrado el fichero propertys.conf
+[Sun Apr 27 13:14:50 2025] - Iniciando memoria compartida...
+[Sun Apr 27 13:14:50 2025] - Se ha creado la memoria compartida
+[Sun Apr 27 13:14:54 2025] - Se ha iniciado el proceso de registro de un nuevo usuario
+[Sun Apr 27 13:14:54 2025] - Se ha iniciado init cuenta en modo 0
+[Sun Apr 27 13:14:54 2025] - Init cuentas ha abierto la memoria compartida
+[Sun Apr 27 13:14:54 2025] - Init cuentas ha leido la memoria compartida
+[Sun Apr 27 13:14:59 2025] - Se ha creado un nuevo usuario
+[Sun Apr 27 13:14:59 2025] - Se ha creado el directorio para el nuevo usuario
+[Sun Apr 27 13:15:00 2025] - Se ha cerrado init cuenta en modo 0
+[Sun Apr 27 13:15:05 2025] - Inicio de sesion fallido: no existe el usuario
+[Sun Apr 27 13:15:10 2025] - El usuario con PID 6267 ha inciado sesion
+[Sun Apr 27 13:15:10 2025] - El usuario con PID 6267 ha abierto la memoria compartida
+[Sun Apr 27 13:15:10 2025] - El usuario con PID 6267 ha leido la memoria compartida
+[Sun Apr 27 13:15:16 2025] - El usuario con PID 6267 ha cerrado sesion
+[Sun Apr 27 13:15:20 2025] - Cerrando banco de manera segura
+[Sun Apr 27 13:15:22 2025] - ----------------------
+[Sun Apr 27 13:15:52 2025] - ---------------------------
+[Sun Apr 27 13:15:52 2025] - Inciando banco
+[Sun Apr 27 13:15:52 2025] - Se esta cargando la configuracion del banco
+[Sun Apr 27 13:15:52 2025] - Se ha abierto el fichero propertys.conf
+[Sun Apr 27 13:15:52 2025] - Se ha cargado la configuracion del programa
+[Sun Apr 27 13:15:52 2025] - Se ha cerrado el fichero propertys.conf
+[Sun Apr 27 13:15:52 2025] - Se ha iniciado init cuenta en modo 1
+[Sun Apr 27 13:15:52 2025] - Se ha cerrado init cuenta en modo 1
+[Sun Apr 27 13:15:54 2025] - Iniciando memoria compartida...
+[Sun Apr 27 13:15:54 2025] - Se ha creado la memoria compartida
+[Sun Apr 27 13:15:59 2025] - Se ha iniciado el proceso de registro de un nuevo usuario
+[Sun Apr 27 13:15:59 2025] - Se ha iniciado init cuenta en modo 0
+[Sun Apr 27 13:15:59 2025] - Init cuentas ha abierto la memoria compartida
+[Sun Apr 27 13:15:59 2025] - Init cuentas ha leido la memoria compartida
+[Sun Apr 27 13:16:04 2025] - Se ha creado un nuevo usuario
+[Sun Apr 27 13:16:04 2025] - Se ha creado el directorio para el nuevo usuario
+[Sun Apr 27 13:16:06 2025] - Se ha cerrado init cuenta en modo 0
+[Sun Apr 27 13:16:10 2025] - Inicio de sesion fallido: no existe el usuario
+[Sun Apr 27 13:16:43 2025] - Cerrando banco de manera segura
+[Sun Apr 27 13:16:45 2025] - ----------------------
+[Sun Apr 27 13:17:17 2025] - ---------------------------
+[Sun Apr 27 13:17:17 2025] - Inciando banco
+[Sun Apr 27 13:17:17 2025] - Se esta cargando la configuracion del banco
+[Sun Apr 27 13:17:17 2025] - Se ha abierto el fichero propertys.conf
+[Sun Apr 27 13:17:17 2025] - Se ha cargado la configuracion del programa
+[Sun Apr 27 13:17:17 2025] - Se ha cerrado el fichero propertys.conf
+[Sun Apr 27 13:17:19 2025] - Iniciando memoria compartida...
+[Sun Apr 27 13:17:19 2025] - Se ha creado la memoria compartida
+[Sun Apr 27 13:17:29 2025] - Inicio de sesion fallido: no existe el usuario
+[Sun Apr 27 13:17:38 2025] - Se ha iniciado el proceso de registro de un nuevo usuario
+[Sun Apr 27 13:17:38 2025] - Se ha iniciado init cuenta en modo 0
+[Sun Apr 27 13:17:38 2025] - Init cuentas ha abierto la memoria compartida
+[Sun Apr 27 13:17:38 2025] - Init cuentas ha leido la memoria compartida
+[Sun Apr 27 13:17:43 2025] - Se ha creado un nuevo usuario
+[Sun Apr 27 13:17:43 2025] - Se ha creado el directorio para el nuevo usuario
+[Sun Apr 27 13:17:43 2025] - Se ha cerrado init cuenta en modo 0
+[Sun Apr 27 13:17:49 2025] - El usuario con PID 6456 ha inciado sesion
+[Sun Apr 27 13:17:49 2025] - El usuario con PID 6456 ha abierto la memoria compartida
+[Sun Apr 27 13:17:49 2025] - El usuario con PID 6456 ha leido la memoria compartida
+[Sun Apr 27 13:17:52 2025] - El usuario con PID 6456 ha cerrado sesion
+[Sun Apr 27 13:17:57 2025] - Cerrando banco de manera segura
+[Sun Apr 27 13:17:59 2025] - ----------------------

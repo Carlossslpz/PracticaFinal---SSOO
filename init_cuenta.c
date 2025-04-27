@@ -2,8 +2,8 @@
 
 //Definimos las funciones
 void  escribirBanco(char * arg);
-int localizarUltimo(char * ficheroParam);
-void  menu(char * ficheroParam);
+char * crearDirectorio(int cuentaId);
+void  menu();
 void  generarDatos(char * ficherParam);
 void seniales(int senial);
 void  escribirLog(char * mensaje);
@@ -17,7 +17,7 @@ void leerMemoriaCompartida();
 bool activo;
 char *fichero_log;
 pid_t pid_programa;
-sem_t *semaforo_cuentas,*semaforo_log,*semaforo_fifo;
+sem_t *semaforo_cuentas,*semaforo_log,*semaforo_fifo,*semaforo_memoria;
 int semaforos_usados[4];
 MEMORIA * listaUsers;
 
@@ -45,6 +45,7 @@ int main(int argc, char *argv[])
     semaforo_cuentas = sem_open(SEMAFORO_MUTEX_CUENTAS,0);
     semaforo_log = sem_open(SEMAFORO_MUTEX_LOG,0);
     semaforo_fifo = sem_open(SEMAFORO_MUTEX_FIFO,0);
+    semaforo_memoria = sem_open(SEMAFORO_MUTEX_MEMORIA,0);
 
 
     //Vemos si ha habido fallos con los semaforos
@@ -66,7 +67,16 @@ int main(int argc, char *argv[])
         //Genero un señal de muerte para matarme
         kill(pid_programa,SIGTERM);
        
-    }    
+    }
+    if (semaforo_memoria == SEM_FAILED)
+    {
+        //Si no puede abrir el semaforo la logica del programa se ve afectada por lo que salimos
+        snprintf(mensaje,sizeof(mensaje),"Error %d al abrir semaforo de memoria en init_cuenta",errno);
+        escribirLog(mensaje);
+        fprintf(stderr,"%s\n",mensaje);
+        //Genero un señal de muerte
+        kill(pid_programa,SIGTERM);
+    } 
 
     if (semaforo_log == SEM_FAILED)
     {
@@ -96,7 +106,7 @@ int main(int argc, char *argv[])
      
         snprintf(mensaje,sizeof(mensaje),"0-%d",pid_programa);
         escribirBanco(mensaje);
-        //leerMemoriaCompartida();
+        leerMemoriaCompartida();
     
         menu(argv[1]);
 
@@ -129,28 +139,45 @@ void leerMemoriaCompartida()
 {
     
     int i,fd_memoria;
-    char linea[255];
+    char linea[255],mensaje[255];
     char *id,*nombre,*saldo,*trasn;
 
-    
+    snprintf(mensaje,sizeof(mensaje),"Init cuentas ha abierto la memoria compartida");
+    escribirLog(mensaje);
+    //Creamos el semaforo para la memoria compartida
 
+    sem_wait(semaforo_memoria);
     fd_memoria = shm_open(MEMORIA_COMPARTIDA , O_RDWR,0666);
     i = 0;
     if (fd_memoria == -1 )
     {
-        perror("No se puede leer la memoria\n");
-        escribirLog("Fallo 1");
-        exit(0);
+        snprintf(mensaje,sizeof(mensaje),"Error %d al abrir la memoria compartida",errno);
+        escribirLog(mensaje);
+        fprintf(stderr,"%s\n",mensaje);
+        //Liberamos el semaforo para no retener recursos
+        sem_post(semaforo_memoria);
+        //Generamos una señal para automatarnos
+        kill(pid_programa,SIGTERM);
+        
     } 
 
   
     listaUsers = mmap(0,TAMANIO_MEMORIA,PROT_READ | PROT_WRITE,MAP_SHARED,fd_memoria,0);
     if (listaUsers ==MAP_FAILED)
     {
-        perror("No se puede leer la memoria\n");
-        escribirLog("Fallo 1");
-        exit(0);
+        snprintf(mensaje,sizeof(mensaje),"Error %d al mapear la memoria compartida",errno);
+        escribirLog(mensaje);
+        fprintf(stderr,"%s\n",mensaje);
+        //Liberamos el semaforo para no retener recursos
+        sem_post(semaforo_memoria);
+        //Generamos una señal para automatarnos
+        kill(pid_programa,SIGTERM);
     }
+
+    sem_post(semaforo_memoria);
+    snprintf(mensaje,sizeof(mensaje),"Init cuentas ha leido la memoria compartida");
+    escribirLog(mensaje);
+    return;
 
 }
 
@@ -201,76 +228,16 @@ void  escribirBanco(char * mensaje)
 }
 
 
-//Nombre: localizarUltimo.
-//Retorno: int.
-//Parámetros: ficheroParam (char *).
-//Uso: Localiza la última línea del fichero especificado para determinar el siguiente ID de usuario disponible.
-
-int localizarUltimo(char * ficheroParam)
-{
-    //Esta funcion lo uncio que hace es localizar la ultima linea del fichero para asignar luego un id al usuario
-   
- 
-
-    //Creamos las variables
-    FILE * fichero;
-    int contador;
-    char linea[255],mensaje[255];
-
-    //Bloqueamos el semaforo de la exclusion muta de cuentas
-    sem_wait(semaforo_cuentas);
-    semaforos_usados[0]=1;
-    if ((fichero = fopen(ficheroParam,"r") )== NULL)
-    {
-        //Si no puede abrir el fichero la logica del programa se ve afectada por lo que salimos
-        snprintf(mensaje,sizeof(mensaje),"Error %d al abrir el fichero %s",errno,ficheroParam);
-        escribirLog(mensaje);
-        fprintf(stderr,"%s\n",mensaje);
-        //Liberamos el semaforo del hilo y de exclusion mutua del fhcero
-        sem_post(semaforo_cuentas);
-        semaforos_usados[0]=0;
-        //Generamos una señal para automatarnos
-        kill(pid_programa,SIGTERM);
-    }
-
-
-    contador =0;
-    //Leemos el fichero y contamos las lineas, de tal manera que la ultima linea sera el id del cliente
-    //ya que las lineas empiezan en 1 y los id en 0
-    while(fgets(linea,255,fichero) != NULL) contador++;
-    
-    //Cerramos el fichero  
-    fclose(fichero);
-    //Notificamos que se ha abierto el fichero
-    sem_post(semaforo_cuentas);
-    semaforos_usados[0]=0;
-
-   
-    //Actualizamos el log
-    snprintf(mensaje,sizeof(mensaje),"Se ha abierto el fichero %s",ficheroParam);
-    escribirLog(mensaje);
-
-    escribirLog("Se ha localizado el ultimo");
-
-    snprintf(mensaje,sizeof(mensaje),"Se ha cerrado el fichero %s",ficheroParam);
-    escribirLog(mensaje);  
- 
-    return contador;
-    
-}
 //Nombre: menu.
 //Retorno: void.
 //Parámetros: ficheroParam (char *).
 //Uso: Crea una nueva cuenta de usuario, pidiendo los datos por terminal
 //escribiéndola en el fichero especificado y registrando los eventos en el log.
-void  menu(char * ficheroParam)
+void  menu()
 {
-   
- 
-
     //Creamos las variables
     int fd,n_cuenta,i;
-    FILE *fichero;
+    char*fichero;
     char mensaje[255],nombre[250];
 
    
@@ -285,10 +252,9 @@ void  menu(char * ficheroParam)
     //Simulamos que esta pensando el programa
     printf("\nCreando cuenta...\n");
     sleep(2);
+    sem_wait(semaforo_memoria);
     //Asgino el numero de cuentas
-    n_cuenta = localizarUltimo(ficheroParam);
-    //Agregamos el usuario al fichero
-    //Hago esto po legibilidad para que sen mas cortos los comandos
+    n_cuenta = listaUsers->n_users + 1;
     i = listaUsers->n_users++;
 
     listaUsers->lista[i].id = n_cuenta;
@@ -298,18 +264,16 @@ void  menu(char * ficheroParam)
     
 
     //Notificamos que se ha cerrado el fichero y lo liberamos
-    sem_post(semaforo_cuentas);
+    sem_post(semaforo_memoria);
     semaforos_usados[0]=0;
 
-    //Actualizamos el log
-    snprintf(mensaje,sizeof(mensaje),"Se ha abierto el fichero %s",ficheroParam);
-    escribirLog(mensaje);
+   
+    escribirLog("Se ha creado un nuevo usuario");
 
-   escribirLog("Se ha creado un usuario");
-
-    snprintf(mensaje,sizeof(mensaje),"Se ha cerrado el fichero %s",ficheroParam);
-    escribirLog(mensaje);
-
+    fichero = crearDirectorio(n_cuenta);
+    strncpy(listaUsers->lista[i].fichero, fichero, sizeof(listaUsers->lista[i].fichero) - 1);
+    listaUsers->lista[i].fichero[sizeof(listaUsers->lista[i].fichero) - 1] = '\0';
+    free(fichero);
    
     //Datos para el usuario importantes
     printf("Cuenta creada...\n");
@@ -319,11 +283,44 @@ void  menu(char * ficheroParam)
     getchar();
 
     
-  
+    
  
     return;
 }
 
+char * crearDirectorio(int cuentaId  )
+{
+    char directorio[500],archivo[700],mensaje[900];
+    FILE *fichero;
+    snprintf(directorio,sizeof(directorio),"./ficheros/usuario_%d",cuentaId);
+    if (mkdir(directorio,0777) == -1)
+    {
+        //Notificamos al user y al log
+        snprintf(mensaje,sizeof(mensaje),"Error %d al crear el directorio %s",errno,directorio);
+        escribirLog(mensaje);
+        fprintf(stderr,"%s\n",mensaje);
+        //Generamos una señal para automatarnos, ya que si no puede abrir el fichero la logica del programa se ve afectada 
+        kill(pid_programa,SIGTERM);
+        return NULL;
+    }
+    //Generamos el fichero de cuentas
+    snprintf(archivo,sizeof(archivo),"%s/transacciones_%d.log",directorio,cuentaId);
+    fichero = fopen(archivo,"a");
+    if (fichero == NULL)
+    {
+        
+        //Notificamos al user y al log
+        snprintf(mensaje,sizeof(mensaje),"Error %d al crear el fichero %s",errno,archivo);
+        escribirLog(mensaje);
+        fprintf(stderr,"%s\n",mensaje);
+        //Generamos una señal para automatarnos, ya que si no puede abrir el fichero la logica del programa se ve afectada 
+        kill(pid_programa,SIGTERM);
+        return NULL; 
+    }
+    escribirLog("Se ha creado el directorio para el nuevo usuario");
+    return strdup(archivo);
+
+}
 //Nombre: generarDatos.
 //Retorno: void.
 //Parámetros: ficheroParam (char *).
