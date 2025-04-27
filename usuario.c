@@ -955,7 +955,7 @@ void leerMemoriaCompartida()
     } 
 
   
-    listaUsers = mmap(0,TAMANIO_MEMORIA,PROT_READ | PROT_WRITE,MAP_SHARED,fd_memoria,0);
+    listaUsers = mmap(0,sizeof(MEMORIA),PROT_READ | PROT_WRITE,MAP_SHARED,fd_memoria,0);
     if (listaUsers ==MAP_FAILED)
     {
         snprintf(mensaje, sizeof(mensaje),"Error al leer la memoria compartida del usuario con pid %d",pid_programa);

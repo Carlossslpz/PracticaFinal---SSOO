@@ -166,7 +166,7 @@ void cerrarBanco()
     terminarSemaforos();
     //Borramos los fifos para que no dejar archivos residuales
     unlink(FIFO_PROGRAMAS_BANCO);
-    munmap(listaUsers,TAMANIO_MEMORIA);
+    munmap(listaUsers,sizeof(MEMORIA));
     close(fd_memoria);
     shm_unlink(MEMORIA_COMPARTIDA);
     
@@ -638,6 +638,7 @@ void  loginUsuario()
                 listaUsers->lista[i].fichero,
                 PROPS.archivo_log
             );
+            listaUsers->lista[i].activo = 1;
          
             parametros[4] = comando;
             parametros[5] = NULL;
@@ -1014,7 +1015,7 @@ void generarMemoriaCompartida()
         kill(SIGKILL,pidgeneral);
     } 
 
-    if (ftruncate(fd_memoria,TAMANIO_MEMORIA) == -1)
+    if (ftruncate(fd_memoria,sizeof(MEMORIA)) == -1)
     {
         escribirLog("Fallo al asignar memoria compartida");
         fprintf(stderr,"Error al asignar memoria compartida\n");
@@ -1024,7 +1025,7 @@ void generarMemoriaCompartida()
     }
 
 
-    listaUsers = mmap(0,TAMANIO_MEMORIA,PROT_WRITE | PROT_READ,MAP_SHARED,fd_memoria,0);
+    listaUsers = mmap(0,(sizeof(MEMORIA) * MAX_USUARIO),PROT_WRITE | PROT_READ,MAP_SHARED,fd_memoria,0);
     if ( listaUsers == MAP_FAILED)
     {
         escribirLog("Fallo al mapear memoria compartida");
@@ -1043,6 +1044,12 @@ void generarMemoriaCompartida()
             saltar = false;
             continue;
         }
+        if (i >= MAX_USUARIO)
+        {
+            escribirLog("Se ha superado el maximo de usuarios en memoria");
+            fprintf(stderr,"Se ha superado el maximo de usuarios en memoria\n");
+            break;
+        }
         //Quitamos el \n 
         linea [strcspn(linea,"\n")] = '\0';
 
@@ -1058,6 +1065,7 @@ void generarMemoriaCompartida()
         listaUsers->lista[i].nombre[sizeof(listaUsers->lista[i].nombre) - 1] = '\0'; // Seguridad
         listaUsers->lista[i].saldo = atof(saldo);
         listaUsers->lista[i].operaciones = atoi(trasn);
+        listaUsers->lista[i].activo = 0;
    
         i++;
     }

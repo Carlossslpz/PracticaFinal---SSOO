@@ -8,7 +8,7 @@ void  generarDatos(char * ficherParam);
 void seniales(int senial);
 void  escribirLog(char * mensaje);
 void leerMemoriaCompartida();
-
+int obtenerNumeroCuenta();
 
 
 
@@ -162,7 +162,7 @@ void leerMemoriaCompartida()
     } 
 
   
-    listaUsers = mmap(0,TAMANIO_MEMORIA,PROT_READ | PROT_WRITE,MAP_SHARED,fd_memoria,0);
+    listaUsers = mmap(0,sizeof(MEMORIA),PROT_READ | PROT_WRITE,MAP_SHARED,fd_memoria,0);
     if (listaUsers ==MAP_FAILED)
     {
         snprintf(mensaje,sizeof(mensaje),"Error %d al mapear la memoria compartida",errno);
@@ -236,7 +236,7 @@ void  escribirBanco(char * mensaje)
 void  menu()
 {
     //Creamos las variables
-    int fd,n_cuenta,i;
+    int fd,n_cuenta,i,j;
     char*fichero;
     char mensaje[255],nombre[250];
 
@@ -254,8 +254,21 @@ void  menu()
     sleep(2);
     sem_wait(semaforo_memoria);
     //Asgino el numero de cuentas
-    n_cuenta = listaUsers->n_users + 1;
-    i = listaUsers->n_users++;
+
+    //Aplicamos la politica de sustitucion en memoria 
+    if ( listaUsers->n_users >= MAX_USUARIO)
+    {
+        for ( j = 0; j<MAX_USUARIO;j++)
+        {
+            if ( listaUsers->lista[j].activo == 0) break;
+        }
+        i = j;
+    }
+    else
+    {
+        i = listaUsers->n_users++;
+    }
+    n_cuenta = obtenerNumeroCuenta();
 
     listaUsers->lista[i].id = n_cuenta;
     strcpy( listaUsers->lista[i].nombre , nombre);
@@ -287,7 +300,16 @@ void  menu()
  
     return;
 }
-
+int obtenerNumeroCuenta()
+{
+    int i,max;
+    max = 0;
+    for ( i = 0; i<listaUsers->n_users;i++)
+    {
+      if ( listaUsers->lista[i].id > max) max = listaUsers->lista[i].id;
+    }
+    return max+1;
+}
 char * crearDirectorio(int cuentaId  )
 {
     char directorio[500],archivo[700],mensaje[900];

@@ -27,8 +27,7 @@
 #define SEMAFORO_MUTEX_MEMORIA "/semaforo_mutex_memoria"
 
 #define MEMORIA_COMPARTIDA "/memoria_compartida_banco"
-#define TAMANIO_MEMORIA 1024*1024*100
-
+#define MAX_USUARIO 100
 //Estrutura comun de memoria
 
 typedef struct 
@@ -38,12 +37,13 @@ typedef struct
     int operaciones;
     float saldo;
     char fichero[255];
+    int activo;
 }USUARIO;
 
 
 typedef struct 
 {
     int n_users;
-    USUARIO lista[255];
+    USUARIO lista[MAX_USUARIO];
 }MEMORIA;
 
