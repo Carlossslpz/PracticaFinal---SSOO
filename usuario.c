@@ -386,6 +386,7 @@ void *Deposito(void *args)
     printf("Se ha realizado el ingreso...\n");
     sleep(1);
     system("clear");
+    escribirBanco("2");
         
    
     
@@ -469,6 +470,7 @@ void *Retiro(void *args)
     printf("Operacion realizada...\n");
     sleep(2);
     system("clear");
+    escribirBanco("2");
    
     //Liberamos el hilo
     sem_post(semaforo_hilos);
@@ -593,6 +595,7 @@ void *Transferencia(void *args)
     printf("Se ha tranferido el dinero...\n");
     sleep(2);
     system("clear");
+    escribirBanco("2");
 
    
     //Liberamos el hilo

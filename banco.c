@@ -16,6 +16,7 @@ void  agregarPila(char *);
 void generarMemoriaCompartida();
 void guardarDatosFichero();
 char * crearArchivoUsuario(int id_usuario);
+void * Buffer(void * arg);
 void inicializarArchivosUsuarios();
 //Declaramos las variables globales asi como las estruturas necesarias
 
@@ -39,6 +40,7 @@ typedef struct propiedades
 
     pid_t arraypids[255];
     int n_procesos_activos;
+    int tiempo_buffer;
     
     
 }PROPIEDADES;
@@ -58,9 +60,9 @@ pid_t pidgeneral;
 sem_t * semaforo_hilos,*semaforo_config,*semaforo_cuentas,*semaforo_trans,*semaforo_log,*semaforo_fifo,*semaforo_memoria;
 sem_t semaforo_control;
 int fd_memoria;
-
+int buff_start;
 //Variables para el cerrado forzado
-pthread_t hilo_mensajes;
+pthread_t hilo_mensajes,hilo_buffer;
 int modo_cerrado = 0;
 int opcion = 0;
 
@@ -117,10 +119,13 @@ int main(int argc, char* argv[])
     //Inciamos el hilo que escucha mensajes
     pthread_create(&hilo_mensajes,NULL,leerMensajes,NULL);
     
+
+    
     sem_wait(&semaforo_control);
     generarMemoriaCompartida();
     sem_post(&semaforo_control);
 
+    pthread_create(&hilo_buffer,NULL,Buffer,NULL);
     inicializarArchivosUsuarios();
     
     //Inicamos el menu del banco
@@ -360,28 +365,13 @@ void * leerMensajes(void * arg)
                 if ( mensaje[0] == '0') modifificarArrayProcesos(mensaje);
                 
                 else if (mensaje[0] == '1') agregarPila(mensaje);
-                    
-                
-                else if (mensaje[0] == '3')
-                {
-                    //En este caso es un mensaje de error del monitor, por tanto lo guardamos en el log
-                    escribirLog(mensaje);
-                }
-                else if (mensaje[0] == '4')
-                {
-                    //En este caso es un mensaje de error del monitor, por tanto lo guardamos en el log
-                    escribirLog(mensaje);
-                }
-                
-                else if (mensaje[0] == '5')
-                {
-                    /* code */
-                }
-                
+                else if (mensaje[0] == '2') buff_start = 1;
+                            
                 else if (strcmp(mensaje,"salir")==0 )
                 {
                     //Cerramos el extremo de lectura, ya que se ha acabado el programa y nadie mas nos va a escribir
                     close(fd_lectura);
+                    buff_start = 2;
                     return NULL;
                 }
                 else escribirLog(mensaje);
@@ -494,6 +484,7 @@ void leerConfiguracion(char * nombre_fichero)
             else if (strcmp(clave, "MAXIMO_TRANSFERENCIAS") == 0) PROPS.max_tranferecnias = atoi(valor);
             else if (strcmp(clave, "MAXIMO_INGRESO") == 0) PROPS.max_ingreso = atoi(valor);
             else if (strcmp(clave, "NUM_HILOS") == 0) PROPS.num_hilos = atoi(valor);
+            else if (strcmp(clave, "TIEMPO_BUFFER") == 0) PROPS.tiempo_buffer = atoi(valor);
             else if (strcmp(clave, "ARCHIVO_CUENTAS") == 0)
             {   
                 strncpy(PROPS.archivo_cuentas, valor, sizeof(PROPS.archivo_cuentas) - 1);
@@ -1194,3 +1185,84 @@ void inicializarArchivosUsuarios(void)
 
     
 }
+
+void *Buffer(void * arg)
+{
+    int t_espera = PROPS.tiempo_buffer;
+    buff_start = 0;
+    while (1)
+    {
+        escribirLog("Se ha iniciado el buffer");
+        if (buff_start == 2) // Si se recibe la señal de detener el buffer, salir
+        {
+            break;
+        }
+
+        // Guardar los datos en el archivo
+        FILE *fichero;
+        int i;
+        char mensaje[255];
+
+
+        sem_wait(semaforo_memoria);
+        if (listaUsers->n_users == 0)
+        {
+            sem_post(semaforo_memoria);
+            continue;
+        }
+
+        
+        sem_wait(semaforo_cuentas);
+        fichero = fopen(PROPS.archivo_cuentas, "w");
+        if (fichero == NULL)
+        {
+            snprintf(mensaje, sizeof(mensaje), "Error al abrir el fichero %s", PROPS.archivo_cuentas);
+            escribirLog(mensaje);
+            fprintf(stderr, "%s\n", mensaje);
+            sem_post(semaforo_cuentas);
+            sem_post(semaforo_memoria);
+            continue;
+        }
+
+        // Guardar los datos en el archivo
+        fprintf(fichero, "nombre;numerocuenta;saldo;transacciones\n");
+        for (i = 0; i < listaUsers->n_users; i++)
+        {
+            fprintf(fichero, "%s;%d;%.2f;%d\n",
+                    listaUsers->lista[i].nombre,
+                    listaUsers->lista[i].id,
+                    listaUsers->lista[i].saldo,
+                    listaUsers->lista[i].operaciones);
+        }
+        fclose(fichero);
+        sem_post(semaforo_cuentas);
+        sem_post(semaforo_memoria);
+
+        escribirLog("El buffer ha acabado de guardar los datos en el archivo");
+        // Reiniciar el temporizador
+        t_espera = PROPS.tiempo_buffer;
+        while (t_espera > 0)
+        {
+            sleep(1);
+            t_espera--;
+
+            // Verificar si se ha recibido una nueva señal para activar el buffer
+            if (buff_start == 1)
+            {
+                buff_start = 0; // Reiniciar la señal
+                break;
+            }
+            else if (buff_start == 2)
+            {
+                break;
+            }
+        }
+    }
+
+    return NULL;
+}
+
+
+
+
+
