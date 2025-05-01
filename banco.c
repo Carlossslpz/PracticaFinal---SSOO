@@ -1192,11 +1192,12 @@ void *Buffer(void * arg)
     buff_start = 0;
     while (1)
     {
-        escribirLog("Se ha iniciado el buffer");
+        
         if (buff_start == 2) // Si se recibe la señal de detener el buffer, salir
         {
             break;
         }
+        escribirLog("Se ha iniciado el buffer");
 
         // Guardar los datos en el archivo
         FILE *fichero;

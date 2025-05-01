@@ -1,7 +1,5 @@
 nombre;numerocuenta;saldo;transacciones
-carlos;1;540.00;6
+carlos;1;500.00;3
 juan;2;20.00;10
 sebastian;3;0.00;0
 maria;4;1200.00;40
-sonia;5;0.00;0
-matei;6;0.00;0
