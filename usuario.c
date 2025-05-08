@@ -253,7 +253,7 @@ void Menu()
     
 
     //Creamos las variables
-    int opcion;   
+    int opcion,i;   
     char mensaje[255];
     pthread_t thread2;
     
@@ -310,6 +310,15 @@ void Menu()
                 //Nos quitamos de la lista de activos del banco
                 snprintf(mensaje,sizeof(mensaje),"0-%d",pid_programa);
                 escribirBanco(mensaje);
+
+                for (i = 0; i<listaUsers->n_users;i++)
+                {
+                    if ( listaUsers->lista[i].id == User.num_cuenta)
+                    {
+                        listaUsers->lista[i].activo = 0;
+                        break;
+                    }
+                }
 
                 
             break;

@@ -27,7 +27,7 @@
 #define SEMAFORO_MUTEX_MEMORIA "/semaforo_mutex_memoria"
 
 #define MEMORIA_COMPARTIDA "/memoria_compartida_banco"
-#define MAX_USUARIO 100
+#define MAX_USUARIO 10
 //Estrutura comun de memoria
 
 typedef struct 

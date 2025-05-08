@@ -4,7 +4,7 @@ void  escribirLog(char * mensaje);
 void  modifificarArrayProcesos(char * );
 void * leerMensajes(void * arg);
 void  leerConfiguracion(char *);
-void loginUsuario();
+void loginUsuario(int id_user);
 void matarProcesos();
 void menu();
 void iniciarSemaforos();
@@ -18,6 +18,9 @@ void guardarDatosFichero();
 char * crearArchivoUsuario(int id_usuario);
 void * Buffer(void * arg);
 void inicializarArchivosUsuarios();
+void listarUsuariosEnMemoria();
+int remplazarUsuario(char * datos);
+char * buscarUserEnFichero(int user_id);
 //Declaramos las variables globales asi como las estruturas necesarias
 
 typedef struct propiedades
@@ -125,7 +128,7 @@ int main(int argc, char* argv[])
     generarMemoriaCompartida();
     sem_post(&semaforo_control);
 
-    pthread_create(&hilo_buffer,NULL,Buffer,NULL);
+    //pthread_create(&hilo_buffer,NULL,Buffer,NULL);
     inicializarArchivosUsuarios();
     
     //Inicamos el menu del banco
@@ -580,112 +583,96 @@ void leerConfiguracion(char * nombre_fichero)
 //      una nueva terminal con su sesion
 //      Este tambien se encarga de asegurarse de que no hayan problemas de carrera con semáforos
 
-void  loginUsuario()
-{
-   
-    //Creamos las variables
-    pid_t pid;
-    FILE *fichero;
-    int status,fd,i,n_cuenta;
-    char * parametros[6];
-    bool encontrado,saltar;
-    char *usuario,*cuenta,*saldo,*transacciones;
-    char comando[1024],mensaje[255],line[255];
+void loginUsuario(int id_user) {
+    int id_actual = id_user;
 
-    
-    saltar = true;
-    encontrado = false;
-
-    //Pedimos el username
-    printf("LOGIN DE USUARIO\n");
-    printf("Introduzca el ID de usuario: ");
-    scanf("%d",&n_cuenta);
-
- 
-    //Protegemos el acceso al fichero 
-   
- 
-
-    //Analizamos todo el archivo para ver si existe dicho usuario
-    for (i = 0; i<listaUsers->n_users;i++)
+     // Variables locales
+     pid_t pid;
+     int n_cuenta;
+     char *datos_user;
+     bool encontrado = false;
+     int i;
+    while (1) 
     {
-      
-        
-        if ( n_cuenta==listaUsers->lista[i].id)
+       
+
+        if (id_actual == -1) 
         {
-            encontrado = true;
-            
-            //Creamos el comando para lanzar el programa usuario
-            parametros[0] = "gnome-terminal";
-            parametros[1] = "--";
-            parametros[2] = "bash";
-            parametros[3] = "-c";
-            
-            snprintf(comando, sizeof(comando), "./usuario %s %d %f %d %s %s", 
-                listaUsers->lista[i].nombre,
-                listaUsers->lista[i].id,
-                listaUsers->lista[i].saldo,
-                listaUsers->lista[i].operaciones,
-                listaUsers->lista[i].fichero,
-                PROPS.archivo_log
-            );
-            listaUsers->lista[i].activo = 1;
-         
-            parametros[4] = comando;
-            parametros[5] = NULL;
-            break;
-            
+            printf("LOGIN DE USUARIO\n");
+            printf("Introduzca el ID de usuario: ");
+            scanf("%d", &n_cuenta);
+        } else 
+        {
+            n_cuenta = id_actual;
         }
 
-        
-    }
-    
-    
-   
-    
-    if (encontrado)
-    {
-        //Si existe lanzamos el usuario en un proceso independiente
-        pid = fork();
-        if (pid== 0)
-        {   
-    
-    
-            if ( execvp("gnome-terminal",parametros)== -1 )
+        // Buscar en lista en memoria
+        for (i = 0; i < listaUsers->n_users; i++) 
+        {
+            if (n_cuenta == listaUsers->lista[i].id) 
             {
-                //Controlamos los errores
-               escribirLog("Inicio de sesion fallido: error al abrir el programa de usuario");
-               
-                perror("execvp failed");
-                //Avisamos de que hay un hilo lobre
-                //sem_post(semaforo_hilos);
-                exit(1);
+                encontrado = true;
+
+                // Ejecutar el proceso de usuario
+                char comando[1024];
+                char *parametros[6];
+
+                snprintf(comando, sizeof(comando), "./usuario %s %d %f %d %s %s",
+                         listaUsers->lista[i].nombre,
+                         listaUsers->lista[i].id,
+                         listaUsers->lista[i].saldo,
+                         listaUsers->lista[i].operaciones,
+                         listaUsers->lista[i].fichero,
+                         PROPS.archivo_log);
+
+                parametros[0] = "gnome-terminal";
+                parametros[1] = "--";
+                parametros[2] = "bash";
+                parametros[3] = "-c";
+                parametros[4] = comando;
+                parametros[5] = NULL;
+
+                listaUsers->lista[i].activo = 1;
+
+                pid = fork();
+                if (pid == 0) 
+                {
+                    execvp("gnome-terminal", parametros);
+                    escribirLog("Inicio de sesion fallido: error al abrir el programa de usuario");
+                    perror("execvp failed");
+                    exit(1);
+                } else if (pid < 0) 
+                {
+                    escribirLog("Inicio de sesion fallido: fork de usuario ha fallado");
+                    perror("Fork ha fallado");
+                    return;
+                }
+
+                return; // Terminar tras login exitoso
             }
-           
-           
         }
-        //Si el pid es negativo es que ha habido un fallo
-        else if (pid < 0)
-        {
-            //notificamos el fallo                
-            escribirLog("Inicio de sesion fallido: fork de usuario ha fallado");
-            perror("Fork ha fallado");  
+
+        // Si no está en memoria, intentamos cargarlo
+        datos_user = buscarUserEnFichero(n_cuenta);
+        if (datos_user == NULL) {
+            printf("Usuario no encontrado\n");
+            escribirLog("Inicio de sesion fallido: no existe el usuario");
+            sleep(1);
             return;
         }
 
-    }
-    else 
-    {
-        //Si no existe el usario indicado damos erro
-        printf("Usuario no encontrado\n");
-        sleep(1);
-        escribirLog("Inicio de sesion fallido: no existe el usuario");    
-    }
- 
- 
-    return; 
+        int id_usr = remplazarUsuario(datos_user);
+        if (id_usr == -1) {
+            printf("No hay espacio para crear el nuevo usuario\n");
+            escribirLog("Inicio de sesion fallido: no hay espacio para crear el nuevo usuario");
+            return;
+        }
 
+        // Cambiamos el ID y repetimos el bucle
+        id_actual = id_usr;
+    }
 }
+
 //Nombre: matarProcesos.
 //Retorno: void.
 //Parametros: Ninguno 
@@ -724,7 +711,7 @@ void menu()
     char comando[1024], mensaje[255],salir;
     pthread_t hilo_verficar,hilo_comunicar;
     
-    while (opcion != 6)
+    while (opcion != 7)
     {
         //system("clear");
         printf("\nBienvenido al Banco\n");
@@ -733,7 +720,8 @@ void menu()
         printf("3-Detectar anomalias con monitor\n");
         printf("4-Ver arbol procesos\n");
         printf("5-Ver anomalias (usar despues monitor)\n");
-        printf("6-Salir\n");
+        printf("6-Ver usuarios en memoria\n");
+        printf("7-Salir\n");
         printf("Que desea hacer: ");
         scanf("%d",&opcion);
         //Pedimos la opcion 
@@ -743,7 +731,7 @@ void menu()
         {   
             case 1:
                 //Si elige el incicio de sesion , se llama a la funcion correpondeinte
-                loginUsuario();
+                loginUsuario(-1);
             break;
 
             case 2:
@@ -828,6 +816,13 @@ void menu()
             break;
 
             case 6:
+                listarUsuariosEnMemoria();
+                printf("Pulsa una tecla para continuar...");
+                while(getchar() != '\n');
+                getchar();
+            break;
+
+            case 7:
                
                
                 //Vemos si todavia hay procesos activos para notificar al usuario y que sea consciente
@@ -1266,4 +1261,121 @@ void *Buffer(void * arg)
 
 
 
+
+void listarUsuariosEnMemoria()
+{
+    int i;
+    char mensaje[255];
+    sem_wait(semaforo_memoria);
+    if (listaUsers->n_users == 0)
+    {
+        snprintf(mensaje, sizeof(mensaje), "No hay usuarios en memoria compartida");
+        escribirLog(mensaje);
+        fprintf(stderr, "%s\n", mensaje);
+        sem_post(semaforo_memoria);
+        return;
+    }
+    for (i = 0; i < listaUsers->n_users; i++)
+    {
+        printf("Usuario %d: %s - Activo: %d\n", listaUsers->lista[i].id, listaUsers->lista[i].nombre,listaUsers->lista[i].activo);
+    }
+    sem_post(semaforo_memoria);
+}
+
+
+
+
+char * buscarUserEnFichero(int id_buscar)
+{
+    FILE * fichero;
+    bool saltar;
+    char mensaje[255],linea[255],copio[255];
+    char *nombre, *id, *saldo, *transacciones,*aux;
+
+    //Abrimos el fichero de cuentas
+   
+    sem_wait(semaforo_cuentas);
+  
+    if ((fichero = fopen(PROPS.archivo_cuentas, "r")) == NULL)
+    {
+        snprintf(mensaje, sizeof(mensaje), "Error al abrir el fichero %s", PROPS.archivo_cuentas);
+        escribirLog(mensaje);
+        fprintf(stderr, "%s\n", mensaje);
+        sem_post(semaforo_cuentas);
+        return NULL;
+    }
+
+    saltar = true;
+    while (fgets(linea, 255, fichero) != NULL)
+    {
+        if (saltar)
+        {
+            saltar = false;
+            continue;
+        }
+        //Quitamos el \n 
+        linea[strcspn(linea, "\n")] = '\0';
+
+        strcpy(copio,linea);
+     
+        //Sacamos los datos de cada linea
+        nombre = strtok(linea, ";");
+        id = strtok(NULL, ";");
+        saldo = strtok(NULL, ";");
+        transacciones = strtok(NULL, ";");
+
+        if (atoi(id) == id_buscar)
+        {
+            return strdup(copio);
+        }
+    }
+    
+    fclose(fichero);
+    sem_post(semaforo_cuentas);
+    return NULL;
+}
+
+int  remplazarUsuario(char * datos)
+{
+    char *nombre, *id, *saldo, *transacciones,*fichero;
+    int i;
+  
+
+    //buscamos el primer usuario que no este activo
+    //y lo reemplazamos por el nuevo
+    sem_wait(semaforo_memoria);
+    for ( i = 0; i< listaUsers->n_users; i++)
+    {
+       
+        if (listaUsers->lista[i].activo == 0)
+        {
+            //Saco los datos de la cadena
+            nombre = strtok(datos, ";");
+            printf("Nombre %s\n",nombre);
+            id = strtok(NULL, ";");
+            saldo = strtok(NULL, ";");
+            transacciones = strtok(NULL, ";");
+
+
+          
+            strncpy(listaUsers->lista[i].nombre, nombre, sizeof(listaUsers->lista[i].nombre) - 1);
+            listaUsers->lista[i].nombre[sizeof(listaUsers->lista[i].nombre) - 1] = '\0'; // Seguridad
+            listaUsers->lista[i].id = atoi(id);
+            listaUsers->lista[i].saldo = atof(saldo);
+            listaUsers->lista[i].operaciones = atoi(transacciones);
+            listaUsers->lista[i].activo = 0;
+           
+
+            fichero = crearArchivoUsuario(listaUsers->lista[i].id);
+           
+            strncpy(listaUsers->lista[i].fichero, fichero, sizeof(listaUsers->lista[i].fichero) - 1);
+            listaUsers->lista[i].fichero[sizeof(listaUsers->lista[i].fichero) - 1] = '\0';
+            free(fichero);
+            sem_post(semaforo_memoria);
+            return atoi(id);
+        }
+    }
+    sem_post(semaforo_memoria);
+    return -1;
+}
 
