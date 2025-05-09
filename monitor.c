@@ -55,7 +55,7 @@ typedef struct
 
     //Aqui guardo una tupla con el id de USUARIO_MONITOR y las veces que ha tranferido ej;
     //[1][2] al USUARIO_MONITOR 1 le ha tranferido 2 veces , tal que mas de 3 por sesion es fraude 
-    int USUARIO_MONITORs_transferidos[2][200];
+    int usuarios_transferidos[2][200];
     int n_usus_trans;
     
 }USUARIO_MONITOR;
@@ -195,12 +195,18 @@ int main(int argc , char * argv[])
         pthread_create(&hilos_busqueda[1],NULL,buscarTotalIngresos,listaUsers->lista[i].fichero);
         pthread_create(&hilos_busqueda[2],NULL,buscarRetirosMaximos,listaUsers->lista[i].fichero);
         pthread_create(&hilos_busqueda[3],NULL,buscarTotalRetiros,listaUsers->lista[i].fichero);
+        pthread_create(&hilos_busqueda[4],NULL,buscarTransferenciasMaximas,listaUsers->lista[i].fichero);
+        pthread_create(&hilos_busqueda[5],NULL,buscarTotalTransferencias,listaUsers->lista[i].fichero);
+        pthread_create(&hilos_busqueda[6],NULL,buscarTransferenciasEntreCuentas,listaUsers->lista[i].fichero);
 
 
         pthread_join(hilos_busqueda[0],NULL);
         pthread_join(hilos_busqueda[1],NULL);
         pthread_join(hilos_busqueda[2],NULL);
         pthread_join(hilos_busqueda[3],NULL);
+        pthread_join(hilos_busqueda[4],NULL);
+        pthread_join(hilos_busqueda[5],NULL);
+        pthread_join(hilos_busqueda[6],NULL);
         //Una vez que hemos terminado de leer el fichero lo cerramos
         snprintf(mensaje,sizeof(mensaje),"Monitor con pid %d ha terminado de analizar al usuario %d",pid_programa,listaUsers->lista[i].id);
         escribirLog(mensaje);
@@ -676,6 +682,367 @@ void * buscarTotalRetiros(void * arg)
 
 //-----------------------------------------------------------TRANSFERENCIAS-------------------------------------------------------------
 
+
+
+void * buscarTransferenciasMaximas(void * arg)
+{
+    //Bloqueamos un hilo
+    sem_wait(semaforo_hilos);
+    semaforos_usados[0]=1;
+
+    //Creamos las variables
+    int i,j;
+    FILE * fichero;  
+    char mensaje[400],linea[255];
+    char *fecha,* id,*operacion,*cantidad;
+    char *nombre_fichero;
+
+    nombre_fichero = (char *)arg;
+
+    escribirLog("Monitor empieza a buscar transferencias maximos sospechosas...");
+    fichero = fopen(nombre_fichero,"r");
+    if (fichero == NULL)
+    {
+        snprintf(mensaje,sizeof(mensaje),"Error %d al abrir el fichero %s",errno,nombre_fichero);
+        escribirLog(mensaje);
+        //En caso de error cerramos el programa ya que sin poder acceder al log no tiene sentido que funcione
+        sem_post(semaforo_hilos);
+        semaforos_usados[0]=0;
+        //Si no puedo abrir el fichero de transacciones no puedo hacer nada asi que me muero
+        kill(pid_programa,SIGTERM);
+        return NULL;
+    }
+
+    
+    //Buscamos el maximo de cada fecha
+    for ( i = 0; i<listaFechas.index;i++)
+    {
+        //Reiniciamos el fichero para leerlo de nuevo
+        rewind(fichero);
+       
+        //Reiniciamos los contadores de ingresos de USUARIO_MONITORpara cada fecha
+        user.cantidad_retirada = 0;
+
+        while (fgets(linea,sizeof(linea),fichero) != NULL)
+        {
+            //Quito el \n
+            linea[strcspn(linea,"\n")] = 0;
+
+            //Obtenemos los datos de cada linea
+            fecha = strtok(linea,"-");
+            operacion = strtok(NULL,"-");
+            id = strtok(NULL,"-");
+            cantidad = strtok(NULL,"-");
+
+            //Si la fecha no coincide con la que buscamos o la operacion no es un ingreso pasamos
+            if (strcmp(fecha,listaFechas.lista[i]) != 0 || strcmp(operacion,"TRANSFERENCIA") != 0) continue;
+            
+            //Vemos si el id de USUARIO_MONITOR ya existe en la lista de USUARIO_MONITORs
+            
+            //Si existe lo sumamos a la cantidad ingresada
+            user.cantidad_transferida += atof(cantidad);
+
+                    //Si el conjunto de cantidad ingresada es mayor al maximo lo notificamos
+            if (user.cantidad_transferida >= maximos.maxima_cantidad_transferencia)
+            {
+                //Si el ingreso es mayor al maximo lo notificamos
+                snprintf(mensaje,sizeof(mensaje),"1-ALERTA: USUARIO CON ID %s HA SUPERADO LA MAXIMA CANTIDAD DE TRANSFERENCIAS EL DIA %s\n",id,fecha);
+                escribirBanco(mensaje);              
+            }
+           
+            
+            
+        }
+    }
+
+    //Una vez que hemos terminado de leer el fichero lo cerramos
+    fclose(fichero);
+
+    escribirLog("Monitor ha terminado de buscar transferencias maximas sospechosos...");
+    //Liberamos el hilo
+    sem_post(semaforo_hilos);
+    semaforos_usados[0]=1;
+    return NULL;
+
+}
+
+void * buscarTotalTransferencias(void * arg)
+{
+    //Bloqueamos un hilo
+    sem_wait(semaforo_hilos);
+    semaforos_usados[0]=1;
+
+    //Creamos las variables
+    int i,j;
+    FILE * fichero;  
+    char mensaje[400],linea[255];
+    char *fecha,* id,*operacion,*cantidad;
+    char *nombre_fichero;
+
+    nombre_fichero = (char *)arg;
+
+    escribirLog("Monitor empieza a buscar total de transferencias sospechosos...");
+    fichero = fopen(nombre_fichero,"r");
+    if (fichero == NULL)
+    {
+        snprintf(mensaje,sizeof(mensaje),"Error %d al abrir el fichero %s",errno,nombre_fichero);
+        escribirLog(mensaje);
+        //En caso de error cerramos el programa ya que sin poder acceder al log no tiene sentido que funcione
+        sem_post(semaforo_hilos);
+        semaforos_usados[0]=0;
+        //Si no puedo abrir el fichero de transacciones no puedo hacer nada asi que me muero
+        kill(pid_programa,SIGTERM);
+        return NULL;
+    }
+
+    
+    //Buscamos el maximo de cada fecha
+    for ( i = 0; i<listaFechas.index;i++)
+    {
+        //Reiniciamos el fichero para leerlo de nuevo
+        rewind(fichero);
+       
+        //Reiniciamos los contadores de ingresos de USUARIO_MONITORpara cada fecha
+        user.num_transferencias = 0;
+
+        while (fgets(linea,sizeof(linea),fichero) != NULL)
+        {
+            //Quito el \n
+            linea[strcspn(linea,"\n")] = 0;
+
+            //Obtenemos los datos de cada linea
+            fecha = strtok(linea,"-");
+            operacion = strtok(NULL,"-");
+            id = strtok(NULL,"-");
+            cantidad = strtok(NULL,"-");
+
+            //Si la fecha no coincide con la que buscamos o la operacion no es un ingreso pasamos
+            if (strcmp(fecha,listaFechas.lista[i]) != 0 || strcmp(operacion,"TRANFERENCIA") != 0) continue;
+            
+              //Vemos si el id de USUARIO_MONITOR ya existe en la lista de USUARIO_MONITORs
+            
+            //Si existe lo sumamos a la cantidad ingresada
+            user.num_transferencias += 1;
+
+            //Si el conjunto de cantidad ingresada es mayor al maximo lo notificamos
+            if (user.num_transferencias >= maximos.maximo_tranferencias)
+            {
+                //Si el ingreso es mayor al maximo lo notificamos
+                snprintf(mensaje,sizeof(mensaje),"1-ALERTA: USUARIO CON ID %s HA SUPERADO EL TOTAL DE TRANSFERENCIAS EL DIA %s\n",id,fecha);
+                escribirBanco(mensaje);              
+            }
+
+            
+        }
+    }
+
+    //Una vez que hemos terminado de leer el fichero lo cerramos
+    fclose(fichero);
+
+    escribirLog("Monitor ha terminado de buscar total de transferencias sospechosos...");
+    //Liberamos el hilo
+    sem_post(semaforo_hilos);
+    semaforos_usados[0]=1;
+    return NULL;
+
+}
+
+
+
+
+
+void * buscarTransferenciasEntreCuentas(void * arg)
+{
+    //Bloqueamos un hilo
+    sem_wait(semaforo_hilos);
+    semaforos_usados[0]=1;
+
+    //Creamos las variables
+    int i,j,k;
+    FILE * fichero;  
+    char mensaje[400],linea[255];
+    char *fecha,* id,*operacion,*cantidad,*id_tranf;
+    bool encontrado = false;
+    char * fichero_user = arg;
+
+    escribirLog("Monitor empieza a buscar multiples transferencias entre cuentas en un dia");
+    fichero = fopen(fichero_user,"r");
+    if (fichero == NULL)
+    {
+        snprintf(mensaje,sizeof(mensaje),"Error %d al abrir el fichero %s",errno,fichero_user);
+        escribirLog(mensaje);
+        //En caso de error cerramos el programa ya que sin poder acceder al log no tiene sentido que funcione
+        sem_post(semaforo_hilos);
+        semaforos_usados[0]=0;
+        //Si no puedo abrir el fichero de transacciones no puedo hacer nada asi que me muero
+        kill(pid_programa,SIGTERM);
+        return NULL;
+    }
+
+    
+    //Buscamos el maximo de cada fecha
+    for ( i = 0; i<listaFechas.index;i++)
+    {
+        //Reiniciamos el fichero para leerlo de nuevo
+        rewind(fichero);
+       
+        //Reiniciamos los contadores de ingresos de USUARIO_MONITORpara cada fecha
+        for ( j = 0 ; j<user.n_usus_trans;j++)
+        {
+            user.usuarios_transferidos[j][0] = 0;
+            user.usuarios_transferidos[j][1] = 0;
+        }
+        user.n_usus_trans = 0;
+        
+
+        while (fgets(linea,sizeof(linea),fichero) != NULL)
+        {
+            //Quito el \n
+            linea[strcspn(linea,"\n")] = 0;
+           
+
+            //Obtenemos los datos de cada linea
+            fecha = strtok(linea,"-");
+            operacion = strtok(NULL,"-");
+            id = strtok(NULL,"-");
+            cantidad = strtok(NULL,"-");
+            id_tranf = strtok(NULL,"-");
+
+            //Si la fecha no coincide con la que buscamos o la operacion no es un ingreso pasamos
+            if (strcmp(fecha,listaFechas.lista[i]) != 0 || strcmp(operacion,"TRANSFERENCIA") != 0) continue;
+            
+            encontrado = false;
+            //Para cada user miramos su lista de tranferidoas a ver si h atransferido a alguien
+            for ( k = 0; k<=user.n_usus_trans;k++)
+            {
+                if (user.usuarios_transferidos[k][0] == atoi(id_tranf))
+                {
+                    encontrado = true;
+                    break;
+                }
+                
+            }
+            if (encontrado)
+            {
+                //Si ya existe le sumamos uno
+                user.usuarios_transferidos[k][1] += 1;
+
+                //Si el numero de transferencias entre cuentas es mayor al maximo lo notificamos
+                if (user.usuarios_transferidos[k][1] >= maximos.maximo_transferencias_entre_cuentas)
+                {
+                    //Si el ingreso es mayor al maximo lo notificamos
+                    snprintf(mensaje,sizeof(mensaje),"1-ALERTA: USUARIO CON ID %s HA SUPERADO EL MAXIMO NUMERO DE TRANSFERENCIAS ENTRE CUENTAS CON %s EL DIA %s\n",id,id_tranf,fecha);
+                    escribirBanco(mensaje);
+                }
+                
+                //Si el numero de transferencias entre cuentas es mayor al maximo lo notificamos
+                    
+            }
+            else 
+            {
+                //Sino esta le agregamos 
+                user.usuarios_transferidos[user.n_usus_trans++][0] = atoi(id_tranf);
+                user.usuarios_transferidos[user.n_usus_trans][1] = 1;
+            }
+            
+        }
+            
+            
+        
+    }
+
+    //Una vez que hemos terminado de leer el fichero lo cerramos
+    fclose(fichero);
+
+    escribirLog("Monitor ha terminado de buscar multiples transferencias entre cuentas");
+    //Liberamos el hilo
+    sem_post(semaforo_hilos);
+    semaforos_usados[0]=0;
+    return NULL;
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//----------------------------------------------------------OTROS-------------------------------------------------------------
 //Nombre: escribirLog.
 //Retorno: void.
 //Parámetros: mensaje (char *).

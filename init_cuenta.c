@@ -300,6 +300,7 @@ void  menu()
  
     return;
 }
+
 int obtenerNumeroCuenta()
 {
     int i,max;
@@ -379,6 +380,18 @@ void  generarDatos(char * ficheroParam)
     fprintf(fichero ,"juan;2;20;10\n");
     fprintf(fichero ,"sebastian;3;0;0\n");
     fprintf(fichero ,"maria;4;1200;40\n");
+    fprintf(fichero, "andres;6;890.00;15\n");
+    fprintf(fichero,"laura;5;0.00;0\n");
+fprintf(fichero, "sofia;7;25.75;2\n");
+fprintf(fichero, "miguel;8;100.00;1\n");
+fprintf(fichero, "valentina;9;1340.60;50\n");
+fprintf(fichero, "david;10;430.20;12\n");
+fprintf(fichero, "camila;11;980.00;27\n");
+fprintf(fichero, "santiago;12;0.00;0\n");
+fprintf(fichero, "isabella;13;760.30;19\n");
+fprintf(fichero, "diego;14;115.10;4\n");
+fprintf(fichero, "antonella;15;2464.00;67\n");
+
     fclose(fichero);
     //Notificamos que se ha cerrado el fichero
     sem_post(semaforo_cuentas);

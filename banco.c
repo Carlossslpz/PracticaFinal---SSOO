@@ -129,7 +129,7 @@ int main(int argc, char* argv[])
     generarMemoriaCompartida();
     sem_post(&semaforo_control);
 
-    //pthread_create(&hilo_buffer,NULL,Buffer,NULL);
+    pthread_create(&hilo_buffer,NULL,Buffer,NULL);
     inicializarArchivosUsuarios();
     
     //Inicamos el menu del banco
@@ -358,8 +358,6 @@ void * leerMensajes(void * arg)
             if (bytes_leidos > 0)
             {
                 mensaje[bytes_leidos] = '\0';
-               
-        
                 //En funcion del codigo haremos una cosa u otra , estos codigos sirven para catalogar los mensajes
                 //ya que solo hay un hilo y varios programas, por tanto no se sabe de donde viene el mensaje, pero 
                 //0-x pid para controlar los procesos activos
@@ -714,7 +712,7 @@ void menu()
     
     while (opcion != 7)
     {
-        //system("clear");
+        system("clear");
         printf("\nBienvenido al Banco\n");
         printf("1-Login\n");
         printf("2-Crear Cuenta\n");
@@ -1067,51 +1065,6 @@ void generarMemoriaCompartida()
     return;
 }
 
-void guardarDatosFichero()
-{
-    FILE * fichero;
-    int i;
-    char user[255],mensaje[255];
-
-    sem_wait(semaforo_cuentas);
-    if (listaUsers->n_users == 0)
-    {
-        //Si no hay usuarios no tiene sentido guardar nada
-        sem_post(semaforo_cuentas);
-        return;
-    }
-    sem_wait(semaforo_memoria);
-    fichero = fopen(PROPS.archivo_cuentas,"w");
-    if (fichero == NULL)
-    {
-        snprintf(mensaje,sizeof(mensaje),"Error al abrir el fichero %s",PROPS.archivo_cuentas);
-        escribirLog(mensaje);
-        fprintf(stderr,"%s\n",mensaje);
-        sem_post(semaforo_cuentas);
-        sem_post(semaforo_memoria);
-        kill(SIGKILL,pidgeneral);
-    }
-   
-    //Si hay usuarios guardamos los datos en el fichero
-
-    //Imprimimos la cabecera del fichero
-    fprintf(fichero,"nombre;numerocuenta;saldo;transacciones\n");
-
-    for ( i = 0; i<listaUsers->n_users;i++)
-    {
-        fprintf(fichero,"%s;%d;%.2f;%d\n",
-            listaUsers->lista[i].nombre,
-            listaUsers->lista[i].id,
-            listaUsers->lista[i].saldo,
-            listaUsers->lista[i].operaciones
-        );    
-   
-    }
-    fclose(fichero);
-    sem_post(semaforo_cuentas);
-    sem_post(semaforo_memoria);
-    return;
-}
 
 
 char * crearArchivoUsuario(int id_usuario)
@@ -1196,45 +1149,8 @@ void *Buffer(void * arg)
         escribirLog("Se ha iniciado el buffer");
 
         // Guardar los datos en el archivo
-        FILE *fichero;
-        int i;
-        char mensaje[255];
-
-
-        sem_wait(semaforo_memoria);
-        if (listaUsers->n_users == 0)
-        {
-            sem_post(semaforo_memoria);
-            continue;
-        }
-
+        guardarFichero();
         
-        sem_wait(semaforo_cuentas);
-        fichero = fopen(PROPS.archivo_cuentas, "w");
-        if (fichero == NULL)
-        {
-            snprintf(mensaje, sizeof(mensaje), "Error al abrir el fichero %s", PROPS.archivo_cuentas);
-            escribirLog(mensaje);
-            fprintf(stderr, "%s\n", mensaje);
-            sem_post(semaforo_cuentas);
-            sem_post(semaforo_memoria);
-            continue;
-        }
-
-        // Guardar los datos en el archivo
-        fprintf(fichero, "nombre;numerocuenta;saldo;transacciones\n");
-        for (i = 0; i < listaUsers->n_users; i++)
-        {
-            fprintf(fichero, "%s;%d;%.2f;%d\n",
-                    listaUsers->lista[i].nombre,
-                    listaUsers->lista[i].id,
-                    listaUsers->lista[i].saldo,
-                    listaUsers->lista[i].operaciones);
-        }
-        fclose(fichero);
-        sem_post(semaforo_cuentas);
-        sem_post(semaforo_memoria);
-
         escribirLog("El buffer ha acabado de guardar los datos en el archivo");
         // Reiniciar el temporizador
         t_espera = PROPS.tiempo_buffer;
@@ -1388,8 +1304,7 @@ void guardarFichero()
     char * nombre,*id_fichero,*saldo,*trans;
     bool saltar,encontrado;
 
-    snprintf(mensaje,sizeof(mensaje),"Guardando datos en el fichero %s",PROPS.archivo_cuentas);
-    escribirLog(mensaje);
+   
     sem_wait(semaforo_cuentas);
     fichero = fopen(PROPS.archivo_cuentas,"r");
     if (fichero == NULL)
@@ -1471,8 +1386,7 @@ void guardarFichero()
 
     sem_post(semaforo_memoria);
     sem_post(semaforo_cuentas);
-    snprintf(mensaje,sizeof(mensaje),"Se han guardado los datos en el fichero %s",PROPS.archivo_cuentas);
-    escribirLog(mensaje);
+   
 
     return;
 
