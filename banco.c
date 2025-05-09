@@ -21,6 +21,7 @@ void inicializarArchivosUsuarios();
 void listarUsuariosEnMemoria();
 int remplazarUsuario(char * datos);
 char * buscarUserEnFichero(int user_id);
+void guardarFichero();
 //Declaramos las variables globales asi como las estruturas necesarias
 
 typedef struct propiedades
@@ -169,7 +170,7 @@ void cerrarBanco()
     sleep(2);
     escribirLog("----------------------");
     
-    guardarDatosFichero();
+    guardarFichero();
     //Cerramos y borramos tanto los semaforos como los archivos de los mismos
     terminarSemaforos();
     //Borramos los fifos para que no dejar archivos residuales
@@ -584,26 +585,26 @@ void leerConfiguracion(char * nombre_fichero)
 //      Este tambien se encarga de asegurarse de que no hayan problemas de carrera con semáforos
 
 void loginUsuario(int id_user) {
-    int id_actual = id_user;
 
-     // Variables locales
-     pid_t pid;
-     int n_cuenta;
-     char *datos_user;
-     bool encontrado = false;
-     int i;
+
+    // Variables locales
+    pid_t pid;
+    int n_cuenta;
+    char *datos_user;
+    bool encontrado = false;
+    int i;
     while (1) 
     {
        
 
-        if (id_actual == -1) 
+        if (id_user == -1) 
         {
             printf("LOGIN DE USUARIO\n");
             printf("Introduzca el ID de usuario: ");
             scanf("%d", &n_cuenta);
         } else 
         {
-            n_cuenta = id_actual;
+            n_cuenta = id_user;
         }
 
         // Buscar en lista en memoria
@@ -661,15 +662,15 @@ void loginUsuario(int id_user) {
             return;
         }
 
-        int id_usr = remplazarUsuario(datos_user);
-        if (id_usr == -1) {
+        id_user = remplazarUsuario(datos_user);
+        if (id_user == -1) {
             printf("No hay espacio para crear el nuevo usuario\n");
             escribirLog("Inicio de sesion fallido: no hay espacio para crear el nuevo usuario");
             return;
         }
 
-        // Cambiamos el ID y repetimos el bucle
-        id_actual = id_usr;
+    
+        
     }
 }
 
@@ -1293,7 +1294,6 @@ char * buscarUserEnFichero(int id_buscar)
     char *nombre, *id, *saldo, *transacciones,*aux;
 
     //Abrimos el fichero de cuentas
-   
     sem_wait(semaforo_cuentas);
   
     if ((fichero = fopen(PROPS.archivo_cuentas, "r")) == NULL)
@@ -1326,6 +1326,7 @@ char * buscarUserEnFichero(int id_buscar)
 
         if (atoi(id) == id_buscar)
         {
+            sem_post(semaforo_cuentas);
             return strdup(copio);
         }
     }
@@ -1341,6 +1342,7 @@ int  remplazarUsuario(char * datos)
     int i;
   
 
+   
     //buscamos el primer usuario que no este activo
     //y lo reemplazamos por el nuevo
     sem_wait(semaforo_memoria);
@@ -1351,7 +1353,6 @@ int  remplazarUsuario(char * datos)
         {
             //Saco los datos de la cadena
             nombre = strtok(datos, ";");
-            printf("Nombre %s\n",nombre);
             id = strtok(NULL, ";");
             saldo = strtok(NULL, ";");
             transacciones = strtok(NULL, ";");
@@ -1377,5 +1378,105 @@ int  remplazarUsuario(char * datos)
     }
     sem_post(semaforo_memoria);
     return -1;
+}
+
+void guardarFichero()
+{
+    FILE *fichero,*tmp;
+    int i,j;
+    char mensaje[255],linea[255];
+    char * nombre,*id_fichero,*saldo,*trans;
+    bool saltar,encontrado;
+
+    snprintf(mensaje,sizeof(mensaje),"Guardando datos en el fichero %s",PROPS.archivo_cuentas);
+    escribirLog(mensaje);
+    sem_wait(semaforo_cuentas);
+    fichero = fopen(PROPS.archivo_cuentas,"r");
+    if (fichero == NULL)
+    {
+        snprintf(mensaje,sizeof(mensaje),"Error al abrir el fichero %s",PROPS.archivo_cuentas);
+        escribirLog(mensaje);
+        fprintf(stderr,"%s\n",mensaje);
+        sem_post(semaforo_cuentas);
+        return;
+    }
+    tmp = fopen("tmp.txt","w");
+    if (tmp == NULL)
+    {
+        snprintf(mensaje,sizeof(mensaje),"Error al abrir el fichero tmp.txt");
+        escribirLog(mensaje);
+        fprintf(stderr,"%s\n",mensaje);
+        fclose(fichero);
+        sem_post(semaforo_cuentas);
+    
+        return;
+    }
+    saltar = true;  
+
+    fprintf(tmp,"nombre;numerocuenta;saldo;transacciones\n");
+    sem_wait(semaforo_memoria);
+    while (fgets(linea,255,fichero) != NULL)
+    {
+        encontrado = false;
+        //saltamos la cabecera
+        if (saltar)
+        {
+            saltar = false;
+            continue;
+        }
+
+        //Quitamos el \n 
+        linea[strcspn(linea, "\n")] = '\0';
+        //Sacamos los datos de cada linea
+        nombre = strtok(linea, ";");
+        id_fichero = strtok(NULL, ";");
+        saldo = strtok(NULL, ";");
+        trans = strtok(NULL, ";");
+
+        for (i = 0; i < listaUsers->n_users; i++)
+        {
+          
+            //Sacamos los datos de cada linea
+           
+            //Si el id coincide lo actualizamos
+            if (atoi(id_fichero) == listaUsers->lista[i].id)
+            {
+                fprintf(tmp, "%s;%d;%.2f;%d\n",
+                    listaUsers->lista[i].nombre,
+                    listaUsers->lista[i].id,
+                    listaUsers->lista[i].saldo,
+                    listaUsers->lista[i].operaciones
+                );
+                encontrado = true;
+                break;
+                
+            }
+        }
+      
+        if (!encontrado)
+        {
+            //Si no lo hemos encontrado lo escribimos tal cual
+            fprintf(tmp, "%s;%s;%s;%s\n",
+                nombre,
+                id_fichero,
+                saldo,trans);
+        }
+    }
+
+    fclose(tmp);
+    fclose(fichero);
+
+    remove(PROPS.archivo_cuentas);
+    rename("tmp.txt", PROPS.archivo_cuentas);
+
+    sem_post(semaforo_memoria);
+    sem_post(semaforo_cuentas);
+    snprintf(mensaje,sizeof(mensaje),"Se han guardado los datos en el fichero %s",PROPS.archivo_cuentas);
+    escribirLog(mensaje);
+
+    return;
+
+
+    
 }
 
