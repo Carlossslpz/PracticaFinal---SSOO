@@ -2638,3 +2638,166 @@
 [Fri May  9 13:11:47 2025] - Cerrando banco de manera segura
 [Fri May  9 13:11:47 2025] - Usuario con PID 8237 saliendo de manera forzada por motivo del banco...
 [Fri May  9 13:11:49 2025] - ----------------------
+[Fri May  9 13:17:06 2025] - Usuario con PID 6614 saliendo de manera forzada...
+[Fri May  9 13:17:06 2025] - Error 2 al abrir el fifo de programas por parte del usuario con PID 6614
+[Fri May  9 14:29:26 2025] - ---------------------------
+[Fri May  9 14:29:26 2025] - Inciando banco
+[Fri May  9 14:29:26 2025] - Se esta cargando la configuracion del banco
+[Fri May  9 14:29:26 2025] - Se ha abierto el fichero propertys.conf
+[Fri May  9 14:29:26 2025] - Se ha cargado la configuracion del programa
+[Fri May  9 14:29:26 2025] - Se ha cerrado el fichero propertys.conf
+[Fri May  9 14:29:29 2025] - Iniciando memoria compartida...
+[Fri May  9 14:29:29 2025] - Se ha superado el maximo de usuarios en memoria
+[Fri May  9 14:29:29 2025] - Se ha creado la memoria compartida
+[Fri May  9 14:29:29 2025] - Se ha iniciado el buffer
+[Fri May  9 14:29:29 2025] - El buffer ha acabado de guardar los datos en el archivo
+[Fri May  9 14:29:31 2025] - Se ha iniciado el proceso de registro de un nuevo usuario
+[Fri May  9 14:29:31 2025] - Se ha iniciado init cuenta en modo 0
+[Fri May  9 14:29:31 2025] - Init cuentas ha abierto la memoria compartida
+[Fri May  9 14:29:31 2025] - Init cuentas ha leido la memoria compartida
+[Fri May  9 14:29:42 2025] - Se ha creado un nuevo usuario
+[Fri May  9 14:29:42 2025] - Se ha creado el directorio para el nuevo usuario
+[Fri May  9 14:29:45 2025] - Se ha cerrado init cuenta en modo 0
+[Fri May  9 14:29:47 2025] - Cerrando banco de manera segura
+[Fri May  9 14:29:49 2025] - ----------------------
+[Fri May  9 14:30:39 2025] - ---------------------------
+[Fri May  9 14:30:39 2025] - Inciando banco
+[Fri May  9 14:30:39 2025] - Se esta cargando la configuracion del banco
+[Fri May  9 14:30:39 2025] - Se ha abierto el fichero propertys.conf
+[Fri May  9 14:30:39 2025] - Se ha cargado la configuracion del programa
+[Fri May  9 14:30:39 2025] - Se ha cerrado el fichero propertys.conf
+[Fri May  9 14:30:41 2025] - Iniciando memoria compartida...
+[Fri May  9 14:30:41 2025] - Se ha superado el maximo de usuarios en memoria
+[Fri May  9 14:30:41 2025] - Se ha creado la memoria compartida
+[Fri May  9 14:30:41 2025] - Se ha iniciado el buffer
+[Fri May  9 14:30:41 2025] - El buffer ha acabado de guardar los datos en el archivo
+[Fri May  9 14:30:44 2025] - Se ha iniciado el proceso de registro de un nuevo usuario
+[Fri May  9 14:30:44 2025] - Se ha iniciado init cuenta en modo 0
+[Fri May  9 14:30:44 2025] - Init cuentas ha abierto la memoria compartida
+[Fri May  9 14:30:44 2025] - Init cuentas ha leido la memoria compartida
+[Fri May  9 14:30:51 2025] - Se ha creado un nuevo usuario
+[Fri May  9 14:30:51 2025] - Se ha creado el directorio para el nuevo usuario
+[Fri May  9 14:30:55 2025] - Se ha cerrado init cuenta en modo 0
+[Fri May  9 14:31:01 2025] - Cerrando banco de manera segura
+[Fri May  9 14:31:03 2025] - ----------------------
+[Fri May  9 14:31:55 2025] - ---------------------------
+[Fri May  9 14:31:55 2025] - Inciando banco
+[Fri May  9 14:31:55 2025] - Se esta cargando la configuracion del banco
+[Fri May  9 14:31:55 2025] - Se ha abierto el fichero propertys.conf
+[Fri May  9 14:31:55 2025] - Se ha cargado la configuracion del programa
+[Fri May  9 14:31:55 2025] - Se ha cerrado el fichero propertys.conf
+[Fri May  9 14:31:57 2025] - Iniciando memoria compartida...
+[Fri May  9 14:31:57 2025] - Se ha superado el maximo de usuarios en memoria
+[Fri May  9 14:31:57 2025] - Se ha creado la memoria compartida
+[Fri May  9 14:31:57 2025] - Se ha iniciado el buffer
+[Fri May  9 14:31:57 2025] - El buffer ha acabado de guardar los datos en el archivo
+[Fri May  9 14:32:01 2025] - Inicio de sesion fallido: no existe el usuario
+[Fri May  9 14:32:07 2025] - Se ha iniciado el proceso de registro de un nuevo usuario
+[Fri May  9 14:32:07 2025] - Se ha iniciado init cuenta en modo 0
+[Fri May  9 14:32:07 2025] - Init cuentas ha abierto la memoria compartida
+[Fri May  9 14:32:07 2025] - Init cuentas ha leido la memoria compartida
+[Fri May  9 14:32:12 2025] - Se ha creado un nuevo usuario
+[Fri May  9 14:32:12 2025] - Se ha creado el directorio para el nuevo usuario
+[Fri May  9 14:32:30 2025] - Se ha cerrado init cuenta en modo 0
+[Fri May  9 14:32:33 2025] - Cerrando banco de manera segura
+[Fri May  9 14:32:35 2025] - ----------------------
+[Fri May  9 14:35:34 2025] - ---------------------------
+[Fri May  9 14:35:34 2025] - Inciando banco
+[Fri May  9 14:35:34 2025] - Se esta cargando la configuracion del banco
+[Fri May  9 14:35:34 2025] - Se ha abierto el fichero propertys.conf
+[Fri May  9 14:35:34 2025] - Se ha cargado la configuracion del programa
+[Fri May  9 14:35:34 2025] - Se ha cerrado el fichero propertys.conf
+[Fri May  9 14:35:36 2025] - Iniciando memoria compartida...
+[Fri May  9 14:35:36 2025] - Se ha superado el maximo de usuarios en memoria
+[Fri May  9 14:35:36 2025] - Se ha creado la memoria compartida
+[Fri May  9 14:35:36 2025] - Se ha iniciado el buffer
+[Fri May  9 14:35:36 2025] - El buffer ha acabado de guardar los datos en el archivo
+[Fri May  9 14:35:41 2025] - Se ha iniciado el proceso de registro de un nuevo usuario
+[Fri May  9 14:35:41 2025] - Se ha iniciado init cuenta en modo 0
+[Fri May  9 14:35:41 2025] - Init cuentas ha abierto la memoria compartida
+[Fri May  9 14:35:41 2025] - Init cuentas ha leido la memoria compartida
+[Fri May  9 14:35:47 2025] - Se ha creado un nuevo usuario
+[Fri May  9 14:35:47 2025] - Se ha creado el directorio para el nuevo usuario
+[Fri May  9 14:35:54 2025] - Se ha cerrado init cuenta en modo 0
+[Fri May  9 14:36:09 2025] - Cerrando banco de manera segura
+[Fri May  9 14:36:11 2025] - ----------------------
+[Fri May  9 14:41:11 2025] - ---------------------------
+[Fri May  9 14:41:11 2025] - Inciando banco
+[Fri May  9 14:41:11 2025] - Se esta cargando la configuracion del banco
+[Fri May  9 14:41:11 2025] - Se ha abierto el fichero propertys.conf
+[Fri May  9 14:41:11 2025] - Se ha cargado la configuracion del programa
+[Fri May  9 14:41:11 2025] - Se ha cerrado el fichero propertys.conf
+[Fri May  9 14:41:13 2025] - Iniciando memoria compartida...
+[Fri May  9 14:41:13 2025] - Se ha superado el maximo de usuarios en memoria
+[Fri May  9 14:41:13 2025] - Se ha creado la memoria compartida
+[Fri May  9 14:41:13 2025] - Se ha iniciado el buffer
+[Fri May  9 14:41:13 2025] - El buffer ha acabado de guardar los datos en el archivo
+[Fri May  9 14:41:15 2025] - Se ha iniciado el proceso de registro de un nuevo usuario
+[Fri May  9 14:41:16 2025] - Se ha iniciado init cuenta en modo 0
+[Fri May  9 14:41:16 2025] - Init cuentas ha abierto la memoria compartida
+[Fri May  9 14:41:16 2025] - Init cuentas ha leido la memoria compartida
+[Fri May  9 14:41:19 2025] - Se ha creado un nuevo usuario
+[Fri May  9 14:41:19 2025] - Error 17 al crear el directorio ./ficheros/usuario_16
+[Fri May  9 14:41:19 2025] - Se ha detectado un intento de matar el programa init cuenta, cerrando procesos...
+[Fri May  9 14:41:22 2025] - No se han liberado los recursos pero si los semaforos de init_cuenta...
+[Fri May  9 14:41:25 2025] - Cerrando banco de manera segura
+[Fri May  9 14:41:27 2025] - ----------------------
+[Fri May  9 14:41:50 2025] - ---------------------------
+[Fri May  9 14:41:50 2025] - Inciando banco
+[Fri May  9 14:41:50 2025] - Se esta cargando la configuracion del banco
+[Fri May  9 14:41:50 2025] - Se ha abierto el fichero propertys.conf
+[Fri May  9 14:41:50 2025] - Se ha cargado la configuracion del programa
+[Fri May  9 14:41:50 2025] - Se ha cerrado el fichero propertys.conf
+[Fri May  9 14:41:52 2025] - Iniciando memoria compartida...
+[Fri May  9 14:41:52 2025] - Se ha superado el maximo de usuarios en memoria
+[Fri May  9 14:41:52 2025] - Se ha creado la memoria compartida
+[Fri May  9 14:41:52 2025] - Se ha iniciado el buffer
+[Fri May  9 14:41:52 2025] - El buffer ha acabado de guardar los datos en el archivo
+[Fri May  9 14:41:53 2025] - Se ha iniciado el proceso de registro de un nuevo usuario
+[Fri May  9 14:41:54 2025] - Se ha iniciado init cuenta en modo 0
+[Fri May  9 14:41:54 2025] - Init cuentas ha abierto la memoria compartida
+[Fri May  9 14:41:54 2025] - Init cuentas ha leido la memoria compartida
+[Fri May  9 14:42:17 2025] - Se ha creado un nuevo usuario
+[Fri May  9 14:42:17 2025] - Se ha creado el directorio para el nuevo usuario
+[Fri May  9 14:42:28 2025] - Se ha cerrado init cuenta en modo 0
+[Fri May  9 14:42:34 2025] - Cerrando banco de manera segura
+[Fri May  9 14:42:36 2025] - ----------------------
+[Fri May  9 14:43:21 2025] - ---------------------------
+[Fri May  9 14:43:21 2025] - Inciando banco
+[Fri May  9 14:43:21 2025] - Se esta cargando la configuracion del banco
+[Fri May  9 14:43:21 2025] - Se ha abierto el fichero propertys.conf
+[Fri May  9 14:43:21 2025] - Se ha cargado la configuracion del programa
+[Fri May  9 14:43:21 2025] - Se ha cerrado el fichero propertys.conf
+[Fri May  9 14:43:23 2025] - Iniciando memoria compartida...
+[Fri May  9 14:43:23 2025] - Se ha creado la memoria compartida
+[Fri May  9 14:43:23 2025] - Se ha iniciado el buffer
+[Fri May  9 14:43:23 2025] - El buffer ha acabado de guardar los datos en el archivo
+[Fri May  9 14:43:31 2025] - No hay usuarios en memoria compartida
+[Fri May  9 14:43:33 2025] - Cerrando banco de manera segura
+[Fri May  9 14:43:35 2025] - ----------------------
+[Fri May  9 14:44:12 2025] - ---------------------------
+[Fri May  9 14:44:12 2025] - Inciando banco
+[Fri May  9 14:44:12 2025] - Se esta cargando la configuracion del banco
+[Fri May  9 14:44:12 2025] - Se ha abierto el fichero propertys.conf
+[Fri May  9 14:44:12 2025] - Se ha cargado la configuracion del programa
+[Fri May  9 14:44:12 2025] - Se ha cerrado el fichero propertys.conf
+[Fri May  9 14:44:12 2025] - Se ha iniciado init cuenta en modo 1
+[Fri May  9 14:44:12 2025] - Se ha cerrado init cuenta en modo 1
+[Fri May  9 14:44:15 2025] - Iniciando memoria compartida...
+[Fri May  9 14:44:15 2025] - Se ha superado el maximo de usuarios en memoria
+[Fri May  9 14:44:15 2025] - Se ha creado la memoria compartida
+[Fri May  9 14:44:15 2025] - Se ha iniciado el buffer
+[Fri May  9 14:44:15 2025] - El buffer ha acabado de guardar los datos en el archivo
+[Fri May  9 14:44:35 2025] - Se ha iniciado el proceso de registro de un nuevo usuario
+[Fri May  9 14:44:35 2025] - Se ha iniciado init cuenta en modo 0
+[Fri May  9 14:44:35 2025] - Init cuentas ha abierto la memoria compartida
+[Fri May  9 14:44:35 2025] - Init cuentas ha leido la memoria compartida
+[Fri May  9 14:44:42 2025] - Se ha creado un nuevo usuario
+[Fri May  9 14:44:42 2025] - Se ha creado el directorio para el nuevo usuario
+[Fri May  9 14:44:44 2025] - Se ha cerrado init cuenta en modo 0
+[Fri May  9 14:44:47 2025] - El usuario con PID 6021 ha inciado sesion
+[Fri May  9 14:44:47 2025] - El usuario con PID 6021 ha abierto la memoria compartida
+[Fri May  9 14:44:47 2025] - El usuario con PID 6021 ha leido la memoria compartida
+[Fri May  9 14:44:50 2025] - El usuario con PID 6021 ha cerrado sesion
+[Fri May  9 14:44:59 2025] - Cerrando banco de manera segura
+[Fri May  9 14:45:01 2025] - ----------------------

@@ -14,7 +14,6 @@ void cerrarBanco();
 void  listarPila();
 void  agregarPila(char *);
 void generarMemoriaCompartida();
-void guardarDatosFichero();
 char * crearArchivoUsuario(int id_usuario);
 void * Buffer(void * arg);
 void inicializarArchivosUsuarios();
@@ -941,6 +940,10 @@ void iniciarSemaforos()
     return;
 }
 
+//Nombre: terminarSemaforos
+//Retorno: void
+//Parametros: ninguno
+//Uso: Esta funcion se encarga de cerrar y destruir todos los semaforos creados por el programa
 void terminarSemaforos()
 {
     //Primero cerramos los semaforos
@@ -965,7 +968,14 @@ void terminarSemaforos()
     return;
 }
 
-
+//Nombre: generarMemoriaCompartida
+//Retorno: void
+//Parametros: ninguno
+//Uso: Esta funcion se encarga de crear la memoria compartida y cargar los datos de los usuarios
+//      en ella, para que los procesos hijos puedan acceder a la misma sin problemas
+//      Ademas de esto se encarga de asegurarse de que no haya problemas de carrera mediante semáforos
+//      y de que la memoria compartida se haya creado correctamente
+//      En caso de error se cierra el programa
 void generarMemoriaCompartida()
 {
     FILE * fichero;
@@ -976,8 +986,9 @@ void generarMemoriaCompartida()
 
     escribirLog("Iniciando memoria compartida...");
 
+    //Abrimos el semaforo para que nadie acceda a la memoria compartida
     sem_wait(semaforo_cuentas);
-    
+    //Abrimos el fichero de cuentas para leer los datos de los usuarios
     fichero = fopen(PROPS.archivo_cuentas,"r");
     if (fichero == NULL)
     {
@@ -988,6 +999,7 @@ void generarMemoriaCompartida()
         sem_post(semaforo_memoria);
         kill(SIGKILL,pidgeneral);
     }
+    //Creamos la memoria compartida
     sem_wait(semaforo_memoria);
     fd_memoria = shm_open(MEMORIA_COMPARTIDA,O_CREAT | O_RDWR,0666);
     i = 0;
@@ -999,7 +1011,7 @@ void generarMemoriaCompartida()
         sem_post(semaforo_memoria);
         kill(SIGKILL,pidgeneral);
     } 
-
+    //Le asignamos el tamaño a la memoria compartida en este caso solo podra almacenar el maximo de usuarios 10 por defecto
     if (ftruncate(fd_memoria,sizeof(MEMORIA)) == -1)
     {
         escribirLog("Fallo al asignar memoria compartida");
@@ -1009,7 +1021,7 @@ void generarMemoriaCompartida()
         kill(SIGKILL,pidgeneral);
     }
 
-
+    //Mapeamos la memoria compartida para poder acceder a ella
     listaUsers = mmap(0,(sizeof(MEMORIA) * MAX_USUARIO),PROT_WRITE | PROT_READ,MAP_SHARED,fd_memoria,0);
     if ( listaUsers == MAP_FAILED)
     {
@@ -1029,10 +1041,10 @@ void generarMemoriaCompartida()
             saltar = false;
             continue;
         }
+        //Si hemos llegado al maximo de usuarios, salimos
         if (i >= MAX_USUARIO)
         {
             escribirLog("Se ha superado el maximo de usuarios en memoria");
-            fprintf(stderr,"Se ha superado el maximo de usuarios en memoria\n");
             break;
         }
         //Quitamos el \n 
@@ -1044,7 +1056,7 @@ void generarMemoriaCompartida()
         saldo = strtok (NULL,";");
         trasn = strtok(NULL,";");
     
-       
+        //Guardamos los datos en la memoria compartida
         listaUsers->lista[i].id = atoi(id);
         strncpy(listaUsers->lista[i].nombre, nombre, sizeof(listaUsers->lista[i].nombre) - 1);
         listaUsers->lista[i].nombre[sizeof(listaUsers->lista[i].nombre) - 1] = '\0'; // Seguridad
@@ -1058,6 +1070,7 @@ void generarMemoriaCompartida()
     //Actualizamos el indice de ususarios totales
     listaUsers->n_users = i;
 
+    //Liberamos los recursos
     fclose(fichero);
     sem_post(semaforo_cuentas);
     sem_post(semaforo_memoria);
@@ -1066,7 +1079,11 @@ void generarMemoriaCompartida()
 }
 
 
-
+//Nombre: crearArchivoUsuario
+//Retorno: char *
+//Parametros: int
+//Uso: Esta funcion se encarga de crear el archivo de transacciones de cada usuario en funcion a su ID
+//      Este archivo se crea en un directorio propio con mismo ID del usuario
 char * crearArchivoUsuario(int id_usuario)
 {
     char directorio[256];
@@ -1113,6 +1130,10 @@ char * crearArchivoUsuario(int id_usuario)
 
     return strdup(archivo);
 }
+//Nombre: inicializarArchivosUsuarios
+//Retorno: void
+//Parametros: void
+//Uso: Esta funcion se encarga de inicializar los archivos de transacciones de cada usuario
 
 void inicializarArchivosUsuarios(void)
 {
@@ -1135,6 +1156,12 @@ void inicializarArchivosUsuarios(void)
     
 }
 
+//Nombre: Buffer
+//Retorno: void *
+//Parametros: void *
+//Uso: Esta funcion se encarga de guardar los datos en el fichero de transacciones cada cierto tiempo
+//      Este tiempo se define en el fichero de configuracion
+//      Este buffer se encarga de asegurarse de que no hayan problemas de carrera con semáforos
 void *Buffer(void * arg)
 {
     int t_espera = PROPS.tiempo_buffer;
@@ -1178,7 +1205,11 @@ void *Buffer(void * arg)
 
 
 
-
+//Nombre: guardarFichero
+//Retorno: void
+//Parametros: Ninguno
+//Uso: Esta funcion se encarga listar los usuarios en memoria compartida
+//      mostrando ademas su estado 
 void listarUsuariosEnMemoria()
 {
     int i;
@@ -1202,6 +1233,11 @@ void listarUsuariosEnMemoria()
 
 
 
+//Nombre: buscarUserEnFichero
+//Retorno: char *
+//Parametros: int
+//Uso: Esta funcion se encarga de buscar un usuario en el fichero de cuentas
+//     Se usa en caso de que el usuario no este en memoria compartida
 char * buscarUserEnFichero(int id_buscar)
 {
     FILE * fichero;
@@ -1252,19 +1288,28 @@ char * buscarUserEnFichero(int id_buscar)
     return NULL;
 }
 
+//Nombre: remplazarUsuario
+//Retorno: int
+//Parametros: char *.
+//Uso: Esta funcion se encarga de remplazar un usuario en memoria compartida por otro
+//      Este usuario es el que se ha leido del fichero de cuentas
+//      Este remplazo se hace en caso de que el usuario no este activo
+//      Este tambien se encarga de asegurarse de que no hayan problemas de carrera con semáforos
 int  remplazarUsuario(char * datos)
 {
-    char *nombre, *id, *saldo, *transacciones,*fichero;
     int i;
+    char *nombre, *id, *saldo, *transacciones,*fichero;
+    
   
 
    
-    //buscamos el primer usuario que no este activo
-    //y lo reemplazamos por el nuevo
+    //Bloqueamos el acceso a la memoria compartida para evitar problemas de carrera
     sem_wait(semaforo_memoria);
+    //Buscamos al primer usuario que no este activo
     for ( i = 0; i< listaUsers->n_users; i++)
     {
        
+        //Si el usuario no esta activo, lo podemos remplazar
         if (listaUsers->lista[i].activo == 0)
         {
             //Saco los datos de la cadena
@@ -1289,22 +1334,31 @@ int  remplazarUsuario(char * datos)
             listaUsers->lista[i].fichero[sizeof(listaUsers->lista[i].fichero) - 1] = '\0';
             free(fichero);
             sem_post(semaforo_memoria);
+            //Guardamos el id del usuario para que el padre pueda abrir la sesion
+            //y no se confunda con el id de la memoria compartida
             return atoi(id);
         }
     }
     sem_post(semaforo_memoria);
+    //Si no hemos encontrado un hueco para el nuevo usuario, devolvemos -1
     return -1;
 }
 
+//Nombre: guardarFichero
+//Retorno: void
+//Parametros: Ninguno
+//Uso: Esta funcion se encarga de guardar los datos de los usuarios en el fichero de cuentas
+//      Este fichero se guarda en el formato nombre;id;saldo;transacciones
 void guardarFichero()
 {
+    //Creamos las variables
     FILE *fichero,*tmp;
     int i,j;
     char mensaje[255],linea[255];
     char * nombre,*id_fichero,*saldo,*trans;
     bool saltar,encontrado;
 
-   
+    //Esperamos a que el semaforo de cuentas se libere para poder acceder al fichero
     sem_wait(semaforo_cuentas);
     fichero = fopen(PROPS.archivo_cuentas,"r");
     if (fichero == NULL)
@@ -1330,6 +1384,19 @@ void guardarFichero()
 
     fprintf(tmp,"nombre;numerocuenta;saldo;transacciones\n");
     sem_wait(semaforo_memoria);
+
+    //Primero escribimos los usuarios que ya tenemos en memoria
+    for (j = 0; j < listaUsers->n_users; j++)
+    {
+        
+            fprintf(tmp, "%s;%d;%.2f;%d\n",
+                listaUsers->lista[j].nombre,
+                listaUsers->lista[j].id,
+                listaUsers->lista[j].saldo,
+                listaUsers->lista[j].operaciones
+            );
+        
+    }
     while (fgets(linea,255,fichero) != NULL)
     {
         encontrado = false;
@@ -1348,20 +1415,12 @@ void guardarFichero()
         saldo = strtok(NULL, ";");
         trans = strtok(NULL, ";");
 
+        //Para los usuarios del fichero, vemos si ya existen en memoria
         for (i = 0; i < listaUsers->n_users; i++)
         {
-          
-            //Sacamos los datos de cada linea
-           
             //Si el id coincide lo actualizamos
             if (atoi(id_fichero) == listaUsers->lista[i].id)
             {
-                fprintf(tmp, "%s;%d;%.2f;%d\n",
-                    listaUsers->lista[i].nombre,
-                    listaUsers->lista[i].id,
-                    listaUsers->lista[i].saldo,
-                    listaUsers->lista[i].operaciones
-                );
                 encontrado = true;
                 break;
                 
@@ -1374,7 +1433,8 @@ void guardarFichero()
             fprintf(tmp, "%s;%s;%s;%s\n",
                 nombre,
                 id_fichero,
-                saldo,trans);
+                saldo,trans
+            );
         }
     }
 

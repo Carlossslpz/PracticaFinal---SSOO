@@ -3,12 +3,13 @@
 //Definimos las funciones
 void  escribirBanco(char * arg);
 char * crearDirectorio(int cuentaId);
-void  menu();
+void  menu(char * fichero);
 void  generarDatos(char * ficherParam);
 void seniales(int senial);
 void  escribirLog(char * mensaje);
 void leerMemoriaCompartida();
 int obtenerNumeroCuenta();
+int contarLineas(char * fichero);
 
 
 
@@ -233,7 +234,7 @@ void  escribirBanco(char * mensaje)
 //Parámetros: ficheroParam (char *).
 //Uso: Crea una nueva cuenta de usuario, pidiendo los datos por terminal
 //escribiéndola en el fichero especificado y registrando los eventos en el log.
-void  menu()
+void  menu(char * file)
 {
     //Creamos las variables
     int fd,n_cuenta,i,j;
@@ -255,7 +256,7 @@ void  menu()
     sem_wait(semaforo_memoria);
     //Asgino el numero de cuentas
 
-    //Aplicamos la politica de sustitucion en memoria 
+    //Aplicamos la politica de sustitucion en memoria en caso de que haya llegado al maximo de usuarios
     if ( listaUsers->n_users >= MAX_USUARIO)
     {
         for ( j = 0; j<MAX_USUARIO;j++)
@@ -268,7 +269,10 @@ void  menu()
     {
         i = listaUsers->n_users++;
     }
-    n_cuenta = obtenerNumeroCuenta();
+    n_cuenta = contarLineas(file);
+    //Vemos si ha habido errores al abrir el fichero
+    if (n_cuenta == -1) return;
+
 
     listaUsers->lista[i].id = n_cuenta;
     strcpy( listaUsers->lista[i].nombre , nombre);
@@ -300,7 +304,54 @@ void  menu()
  
     return;
 }
+//Nombre: contarLineas.
+//Retorno: int.
+//Parámetros: file (char *).
+//Uso: Cuenta el número de líneas en un fichero, protegiendo el acceso con un semáforo.
+//      Si no puede abrir el fichero, notifica el error y cierra el programa.
+//      Devuelve el número de líneas o -1 en caso de error.
+int contarLineas(char * file)
+{
+    int contador = 0;
+    FILE *fichero;
+    char linea[255];
+    char mensaje[255];
 
+    //Abrimos el fichero y bloqueamos su semaforo para protegerlo
+    sem_wait(semaforo_cuentas);
+    semaforos_usados[0]=1;
+    if ((fichero = fopen(file,"r")) == NULL)
+    {
+        //Notificamos al user y al log
+        snprintf(mensaje,sizeof(mensaje),"Error %d al abrir el fichero %s",errno,fichero_log);
+        escribirLog(mensaje);
+        fprintf(stderr,"%s\n",mensaje);
+        //Liberamos los semaforos para no retener recursos
+        sem_post(semaforo_cuentas);
+        semaforos_usados[0]=0;
+        //Generamos una señal para automatarnos, ya que si no puede abrir el fichero la logica del programa se ve afectada 
+        kill(pid_programa,SIGTERM);
+        return -1;
+    }
+    //Contamos las lineas del fichero
+    contador = 0;
+    while (fgets(linea,sizeof(linea),fichero) != NULL)
+    {
+        contador++;
+        printf("%s",linea);
+    }
+    fclose(fichero);
+    //Notificamos que se ha cerrado el fichero
+    sem_post(semaforo_cuentas);
+    semaforos_usados[0]=0;
+    //Devolvemos el numero de lineas
+    return contador;
+}
+//Nombre: obtenerNumeroCuenta.
+//Retorno: int.
+//Parámetros: Ninguno.
+//Uso: Devuelve el siguiente número de cuenta disponible, buscando en la lista de usuarios activos.
+//      Protege el acceso con un semáforo.
 int obtenerNumeroCuenta()
 {
     int i,max;
@@ -311,6 +362,11 @@ int obtenerNumeroCuenta()
     }
     return max+1;
 }
+//Nombre: crearDirectorio.
+//Retorno: char *.
+//Parámetros: cuentaId (int).
+//Uso: Crea un directorio para el usuario con su ID y un fichero de transacciones,
+//      protegiendo el acceso con un semáforo. Si hay error, se notifica y se cierra el programa.
 char * crearDirectorio(int cuentaId  )
 {
     char directorio[500],archivo[700],mensaje[900];
@@ -382,15 +438,15 @@ void  generarDatos(char * ficheroParam)
     fprintf(fichero ,"maria;4;1200;40\n");
     fprintf(fichero, "andres;6;890.00;15\n");
     fprintf(fichero,"laura;5;0.00;0\n");
-fprintf(fichero, "sofia;7;25.75;2\n");
-fprintf(fichero, "miguel;8;100.00;1\n");
-fprintf(fichero, "valentina;9;1340.60;50\n");
-fprintf(fichero, "david;10;430.20;12\n");
-fprintf(fichero, "camila;11;980.00;27\n");
-fprintf(fichero, "santiago;12;0.00;0\n");
-fprintf(fichero, "isabella;13;760.30;19\n");
-fprintf(fichero, "diego;14;115.10;4\n");
-fprintf(fichero, "antonella;15;2464.00;67\n");
+    fprintf(fichero, "sofia;7;25.75;2\n");
+    fprintf(fichero, "miguel;8;100.00;1\n");
+    fprintf(fichero, "valentina;9;1340.60;50\n");
+    fprintf(fichero, "david;10;430.20;12\n");
+    fprintf(fichero, "camila;11;980.00;27\n");
+    fprintf(fichero, "santiago;12;0.00;0\n");
+    fprintf(fichero, "isabella;13;760.30;19\n");
+    fprintf(fichero, "diego;14;115.10;4\n");
+    fprintf(fichero, "antonella;15;2464.00;67\n");
 
     fclose(fichero);
     //Notificamos que se ha cerrado el fichero

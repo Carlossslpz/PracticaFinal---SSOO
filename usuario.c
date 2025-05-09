@@ -941,7 +941,12 @@ char* obtener_fecha()
     return fecha;
 }
 
-
+// Nombre: leerMemoriaCompartida
+// Retorno: void
+// Parámetros: void *arg
+// Uso: Esta función se encarga de leer la memoria compartida del programa para poder usarla
+//      Se utiliza para acceder a la lista de usuarios y sus datos, asegurando el acceso seguro mediante semáforos.
+//      Si no puede acceder a la memoria compartida, envía un mensaje al banco y termina el programa.
 void leerMemoriaCompartida()
 {
     
@@ -954,6 +959,7 @@ void leerMemoriaCompartida()
     escribirLog(mensaje);
     sem_wait(semaforo_memoria);
     semaforos_usados[0] = 1;
+    //Creamos el identificador de la memoria compartida
     fd_memoria = shm_open(MEMORIA_COMPARTIDA , O_RDWR,0666);
 
     if (fd_memoria == -1 )
@@ -966,7 +972,7 @@ void leerMemoriaCompartida()
         kill(SIGTERM,pid_programa);
     } 
 
-  
+    //Mapeamos la memoria compartida
     listaUsers = mmap(0,sizeof(MEMORIA),PROT_READ | PROT_WRITE,MAP_SHARED,fd_memoria,0);
     if (listaUsers ==MAP_FAILED)
     {
@@ -978,6 +984,7 @@ void leerMemoriaCompartida()
         kill(SIGTERM,pid_programa);
     }
 
+    //Cerramos el fd de la memoria compartida
     sem_post(semaforo_memoria);
     semaforos_usados[1] = 0;
 
