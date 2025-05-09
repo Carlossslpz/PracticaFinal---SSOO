@@ -39,8 +39,7 @@ typedef struct propiedades
 
     char archivo_cuentas[200];
     char archivo_log[255];
-    char archivo_transacciones[200];
-
+    
     pid_t arraypids[255];
     int n_procesos_activos;
     int tiempo_buffer;
@@ -314,7 +313,6 @@ void  modifificarArrayProcesos(char * codigo)
 
 void * leerMensajes(void * arg)
 {
-
     //Creamos todas las variables
     bool salir;
     int * cerrar;
@@ -497,11 +495,6 @@ void leerConfiguracion(char * nombre_fichero)
                 strncpy(PROPS.archivo_log, valor, sizeof(PROPS.archivo_log) - 1);
                 PROPS.archivo_log[sizeof(PROPS.archivo_log) - 1] = '\0';
                
-            }
-            else if (strcmp(clave, "ARCHIVO_TRANSACCIONES") == 0)
-            {    
-                snprintf(PROPS.archivo_transacciones, sizeof(PROPS.archivo_transacciones), "%s", valor);
-              
             }
             //Si una clave del fichero no coincide con los parametros es que esta mal,
             //Por tanto cerramos el programa , ya que o hay un parametro inecesario o estal mal escrito en el fichero
@@ -785,7 +778,7 @@ void menu()
                     
                     if (execl("./monitor", "monitor", PROPS.archivo_log, 
                         pid_str, ingreso_str, retiro_str, transferencia_str, 
-                        max_ingreso_str, max_retiros_str, max_transf_str, max_tranfer_cuentas_str,PROPS.archivo_transacciones,(char *)NULL) == -1)
+                        max_ingreso_str, max_retiros_str, max_transf_str, max_tranfer_cuentas_str,(char *)NULL) == -1)
                     {
                         //Si monitor falla no tiene sentido que banco funcione asiq eu cerramos
                         kill(pidgeneral,SIGUSR2);

@@ -2801,3 +2801,29 @@
 [Fri May  9 14:44:50 2025] - El usuario con PID 6021 ha cerrado sesion
 [Fri May  9 14:44:59 2025] - Cerrando banco de manera segura
 [Fri May  9 14:45:01 2025] - ----------------------
+[Fri May  9 15:10:23 2025] - ---------------------------
+[Fri May  9 15:10:23 2025] - Inciando banco
+[Fri May  9 15:10:23 2025] - Se esta cargando la configuracion del banco
+[Fri May  9 15:10:23 2025] - Se ha abierto el fichero propertys.conf
+[Fri May  9 15:10:23 2025] - Se ha cargado la configuracion del programa
+[Fri May  9 15:10:23 2025] - Se ha cerrado el fichero propertys.conf
+[Fri May  9 15:10:25 2025] - Iniciando memoria compartida...
+[Fri May  9 15:10:25 2025] - Se ha superado el maximo de usuarios en memoria
+[Fri May  9 15:10:25 2025] - Se ha creado la memoria compartida
+[Fri May  9 15:10:25 2025] - Se ha iniciado el buffer
+[Fri May  9 15:10:25 2025] - El buffer ha acabado de guardar los datos en el archivo
+[Fri May  9 15:10:40 2025] - Cerrando banco de manera segura
+[Fri May  9 15:10:42 2025] - ----------------------
+[Fri May  9 15:17:32 2025] - ---------------------------
+[Fri May  9 15:17:32 2025] - Inciando banco
+[Fri May  9 15:17:32 2025] - Se esta cargando la configuracion del banco
+[Fri May  9 15:17:32 2025] - Se ha abierto el fichero propertys.conf
+[Fri May  9 15:17:32 2025] - Se ha cargado la configuracion del programa
+[Fri May  9 15:17:32 2025] - Se ha cerrado el fichero propertys.conf
+[Fri May  9 15:17:34 2025] - Iniciando memoria compartida...
+[Fri May  9 15:17:34 2025] - Se ha superado el maximo de usuarios en memoria
+[Fri May  9 15:17:34 2025] - Se ha creado la memoria compartida
+[Fri May  9 15:17:34 2025] - Se ha iniciado el buffer
+[Fri May  9 15:17:34 2025] - El buffer ha acabado de guardar los datos en el archivo
+[Fri May  9 15:17:36 2025] - Cerrando banco de manera segura
+[Fri May  9 15:17:38 2025] - ----------------------
