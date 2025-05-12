@@ -365,6 +365,15 @@ void * leerMensajes(void * arg)
                 
                 else if (mensaje[0] == '1') agregarPila(mensaje);
                 else if (mensaje[0] == '2') buff_start = 1;
+                else if (mensaje[0]== '3')
+                {
+                   
+                    char *aux,*aux2;
+                    aux = strtok(mensaje,"-");
+                    aux2 = strtok(NULL,"-");
+
+                    remplazarUsuario(aux2);
+                } 
                             
                 else if (strcmp(mensaje,"salir")==0 )
                 {
@@ -608,13 +617,15 @@ void loginUsuario(int id_user) {
                 char comando[1024];
                 char *parametros[6];
 
-                snprintf(comando, sizeof(comando), "./usuario %s %d %f %d %s %s",
+                snprintf(comando, sizeof(comando), "./usuario %s %d %f %d %s %s %s",
                          listaUsers->lista[i].nombre,
                          listaUsers->lista[i].id,
                          listaUsers->lista[i].saldo,
                          listaUsers->lista[i].operaciones,
                          listaUsers->lista[i].fichero,
-                         PROPS.archivo_log);
+                         PROPS.archivo_log,
+                         PROPS.archivo_cuentas
+                    );
 
                 parametros[0] = "gnome-terminal";
                 parametros[1] = "--";

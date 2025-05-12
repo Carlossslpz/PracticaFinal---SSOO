@@ -10,7 +10,7 @@ typedef struct
     int transacciones;
     int operacionactiva;
     char * ficheroOperaciones;
-    //char * ficheroCuentas;
+    char * ficheroCuentas;
     char * ficheroLog;
     int codigo_identificacion_operacion;
 }CONFIGURACION_USER;
@@ -39,6 +39,7 @@ void * ConsultarSaldo(void *args);
 void escribirTransacciones(DATA d);
 void modificarFicheroCuentas(DATA d);
 void leerMemoriaCompartida();
+char * buscarUsuarioEnFichero(char * fichero,int id_user);
 
 
 
@@ -47,7 +48,7 @@ MEMORIA * listaUsers;
 pid_t pid_programa;
 bool senial_recibida;
 CONFIGURACION_USER User;
-sem_t * semaforo_hilos, *semaforo_memoria,*semaforo_trans,*semaforo_log,*semaforo_fifo;
+sem_t * semaforo_hilos, *semaforo_memoria,*semaforo_trans,*semaforo_log,*semaforo_fifo,*semaforo_cuentas;
 //Esto lo uso para la hora del cierre 
 int semaforos_usados[5];
 
@@ -75,6 +76,7 @@ int main(int argc, char *argv[])
 
     User.ficheroOperaciones= argv[5];
     User.ficheroLog = argv[6];
+    User.ficheroCuentas = argv[7];
   
    
    
@@ -84,11 +86,20 @@ int main(int argc, char *argv[])
     semaforo_trans = sem_open(SEMAFORO_MUTEX_TRANSACCIONES,0);
     semaforo_log = sem_open(SEMAFORO_MUTEX_LOG,0);
     semaforo_fifo = sem_open(SEMAFORO_MUTEX_FIFO,0);
+    semaforo_cuentas = sem_open(SEMAFORO_MUTEX_CUENTAS,0);
     //Controlamos si ha habido algun fallo con los semaforos
     //en dicho caso, nos salimos ya que sin semaforos no se puede controlar el programa y puede dar fallos
     if (semaforo_trans == SEM_FAILED)
     { 
         snprintf(mensaje,sizeof(mensaje),"Ha fallado el semaforo de transacciones del programa usuario, error code %d",errno);
+        fprintf(stderr,"%s\n",mensaje);
+        escribirLog(mensaje);
+        kill(pid_programa,SIGTERM);
+    }
+
+    if (semaforo_cuentas == SEM_FAILED)
+    { 
+        snprintf(mensaje,sizeof(mensaje),"Ha fallado el semaforo de cuentas del programa usuario, error code %d",errno);
         fprintf(stderr,"%s\n",mensaje);
         escribirLog(mensaje);
         kill(pid_programa,SIGTERM);
@@ -506,6 +517,7 @@ void *Transferencia(void *args)
     //Creamos las variables
     DATA d;
     int idTransfer;
+    char * usuario;
     char mensaje[255];
     float cantidadTransfer;
    
@@ -539,15 +551,42 @@ void *Transferencia(void *args)
     //Vemos si el usuario marcado existe
     if (! buscarUser(idTransfer))
     {
-        snprintf(mensaje,sizeof(mensaje),"El usuario con PID %d ha intentado tranferir a un usuario que no existe",pid_programa);
-        escribirLog(mensaje);
-        printf("No existe un usuario con id %d\n",idTransfer);
-        sleep(2);
-        system("clear");
+        usuario = buscarUsuarioEnFichero(User.ficheroCuentas,idTransfer);
+        if (usuario == NULL)
+        {
+            snprintf(mensaje,sizeof(mensaje),"El usuario con PID %d ha intentado tranferir a un usuario que no existe",pid_programa);
+            escribirLog(mensaje);
+            printf("No existe un usuario con id %d\n",idTransfer);
+            sleep(2);
+            system("clear");
         
-        sem_post(semaforo_hilos);
-        semaforos_usados[0]=0;
-        return NULL;
+            sem_post(semaforo_hilos);
+            semaforos_usados[0]=0;
+            return NULL;
+        }
+        else
+        {
+           
+            //escribo al banco para que meta al usuario en Memoria
+            snprintf(mensaje,sizeof(mensaje),"3-%s",usuario);
+            escribirBanco(mensaje);
+            free(usuario);
+            sleep(1);
+            if (!buscarUser(idTransfer))
+            {
+                snprintf(mensaje,sizeof(mensaje),"El usuario con PID %d ha intentado tranferir a un usuario que no existe",pid_programa);
+                escribirLog(mensaje);
+                printf("No existe un usuario con id %d\n",idTransfer);
+                sleep(2);
+                system("clear");
+        
+                sem_post(semaforo_hilos);
+                semaforos_usados[0]=0;
+                return NULL;
+            }
+            
+        }
+        
 
     }
     printf("Introduce la cantidad a transferir: ");
@@ -613,6 +652,53 @@ void *Transferencia(void *args)
     return NULL;   
 
 }
+
+char * buscarUsuarioEnFichero(char * fichero,int id_user)
+{
+    //Creamos las variables
+    FILE *archivo;
+   
+    char error[255],linea[255],copia[255];
+    char * id,*nombre;
+    int i = 0;
+    
+    //Abrimos el fichero
+    sem_wait(semaforo_cuentas);
+    archivo = fopen(fichero,"r");
+    if (archivo == NULL)
+    {
+        snprintf(error,sizeof(error),"Error %d al abrir el fichero %s",errno,fichero);
+        fprintf(stderr,"%s\n",error);
+        escribirLog(error);
+        sem_post(semaforo_cuentas);
+        return NULL;
+    }
+
+    while (fgets(linea,sizeof(linea),archivo) != NULL)
+    {
+
+        linea[strcspn(linea, "\n")] = 0; // Eliminar el salto de línea
+        //Bscamos el id
+        strcpy(copia,linea);
+        nombre = strtok(linea,";");
+        id = strtok(NULL,";");
+        //Si lo hemos encontrado, lo devolvemos
+        if (atoi(id) == id_user)
+        {
+            fclose(archivo);
+            sem_post(semaforo_cuentas);
+            return strdup(copia);
+        }
+    }
+    fclose(archivo);
+    sem_post(semaforo_cuentas);
+    return NULL;
+    
+    
+  
+}
+
+
 
 // Nombre: ConsultarSaldo
 // Retorno: void*

@@ -2827,3 +2827,183 @@
 [Fri May  9 15:17:34 2025] - El buffer ha acabado de guardar los datos en el archivo
 [Fri May  9 15:17:36 2025] - Cerrando banco de manera segura
 [Fri May  9 15:17:38 2025] - ----------------------
+[Mon May 12 10:20:44 2025] - ---------------------------
+[Mon May 12 10:20:44 2025] - Inciando banco
+[Mon May 12 10:20:44 2025] - Se esta cargando la configuracion del banco
+[Mon May 12 10:20:44 2025] - Se ha abierto el fichero propertys.conf
+[Mon May 12 10:20:44 2025] - Se ha cargado la configuracion del programa
+[Mon May 12 10:20:44 2025] - Se ha cerrado el fichero propertys.conf
+[Mon May 12 10:20:48 2025] - Iniciando memoria compartida...
+[Mon May 12 10:20:48 2025] - Se ha superado el maximo de usuarios en memoria
+[Mon May 12 10:20:48 2025] - Se ha creado la memoria compartida
+[Mon May 12 10:20:48 2025] - Se ha iniciado el buffer
+[Mon May 12 10:20:48 2025] - El buffer ha acabado de guardar los datos en el archivo
+[Mon May 12 10:20:52 2025] - El usuario con PID 4669 ha inciado sesion
+[Mon May 12 10:20:52 2025] - El usuario con PID 4669 ha abierto la memoria compartida
+[Mon May 12 10:20:52 2025] - El usuario con PID 4669 ha leido la memoria compartida
+[Mon May 12 10:21:49 2025] - Se ha iniciado el buffer
+[Mon May 12 10:21:49 2025] - El buffer ha acabado de guardar los datos en el archivo
+[Mon May 12 10:21:52 2025] - El usuario con PID 4669 ha iniciado un deposito
+[Mon May 12 10:21:54 2025] - El usuario con PID 4669 ha depositado dinero
+[Mon May 12 10:22:01 2025] - El usuario con PID 4669 ha iniciado una tranferencia
+[Mon May 12 10:22:02 2025] - Se ha iniciado el buffer
+[Mon May 12 10:22:02 2025] - El buffer ha acabado de guardar los datos en el archivo
+[Mon May 12 10:22:03 2025] - El usuario con PID 4669 ha intentado tranferir a un usuario que no existe
+[Mon May 12 10:22:07 2025] - El usuario con PID 4669 ha cerrado sesion
+[Mon May 12 10:22:09 2025] - Cerrando banco de manera segura
+[Mon May 12 10:22:11 2025] - ----------------------
+[Mon May 12 10:37:00 2025] - ---------------------------
+[Mon May 12 10:37:00 2025] - Inciando banco
+[Mon May 12 10:37:00 2025] - Se esta cargando la configuracion del banco
+[Mon May 12 10:37:00 2025] - Se ha abierto el fichero propertys.conf
+[Mon May 12 10:37:00 2025] - Se ha cargado la configuracion del programa
+[Mon May 12 10:37:00 2025] - Se ha cerrado el fichero propertys.conf
+[Mon May 12 10:37:02 2025] - Iniciando memoria compartida...
+[Mon May 12 10:37:02 2025] - Se ha superado el maximo de usuarios en memoria
+[Mon May 12 10:37:02 2025] - Se ha creado la memoria compartida
+[Mon May 12 10:37:02 2025] - Se ha iniciado el buffer
+[Mon May 12 10:37:02 2025] - El buffer ha acabado de guardar los datos en el archivo
+[Mon May 12 10:37:04 2025] - El usuario con PID 5748 ha inciado sesion
+[Mon May 12 10:37:04 2025] - El usuario con PID 5748 ha abierto la memoria compartida
+[Mon May 12 10:37:04 2025] - El usuario con PID 5748 ha leido la memoria compartida
+[Mon May 12 10:37:06 2025] - El usuario con PID 5748 ha iniciado una tranferencia
+[Mon May 12 10:37:17 2025] - Cerrando banco de manera segura
+[Mon May 12 10:37:19 2025] - ----------------------
+[Mon May 12 10:38:17 2025] - Cerrando banco de manera forzada
+[Mon May 12 10:38:17 2025] - Cerrando banco de manera forzada
+
+[Mon May 12 10:38:19 2025] - ----------------------
+[Mon May 12 10:38:22 2025] - Cerrando banco de manera forzada
+[Mon May 12 10:38:22 2025] - Cerrando banco de manera forzada
+
+[Mon May 12 10:38:24 2025] - ----------------------
+[Mon May 12 10:38:28 2025] - ---------------------------
+[Mon May 12 10:38:28 2025] - Inciando banco
+[Mon May 12 10:38:28 2025] - Se esta cargando la configuracion del banco
+[Mon May 12 10:38:28 2025] - Se ha abierto el fichero propertys.conf
+[Mon May 12 10:38:28 2025] - Se ha cargado la configuracion del programa
+[Mon May 12 10:38:28 2025] - Se ha cerrado el fichero propertys.conf
+[Mon May 12 10:38:30 2025] - Iniciando memoria compartida...
+[Mon May 12 10:38:30 2025] - Se ha superado el maximo de usuarios en memoria
+[Mon May 12 10:38:30 2025] - Se ha creado la memoria compartida
+[Mon May 12 10:38:30 2025] - Se ha iniciado el buffer
+[Mon May 12 10:38:30 2025] - El buffer ha acabado de guardar los datos en el archivo
+[Mon May 12 10:38:35 2025] - El usuario con PID 5835 ha inciado sesion
+[Mon May 12 10:38:35 2025] - El usuario con PID 5835 ha abierto la memoria compartida
+[Mon May 12 10:38:35 2025] - El usuario con PID 5835 ha leido la memoria compartida
+[Mon May 12 10:38:35 2025] - salirsalir0-5835
+[Mon May 12 10:38:44 2025] - El usuario con PID 5835 ha iniciado una tranferencia
+[Mon May 12 10:38:56 2025] - Intento de matar el programa usuario con PID 5835, quedan 1 operaciones activas,cerrandolas...
+[Mon May 12 10:39:01 2025] - No se han cerrado las operaciones pendientes del user con PID 5835,pero se han liberado recursos
+[Mon May 12 10:42:11 2025] - ---------------------------
+[Mon May 12 10:42:11 2025] - Inciando banco
+[Mon May 12 10:42:11 2025] - Se esta cargando la configuracion del banco
+[Mon May 12 10:42:11 2025] - Se ha abierto el fichero propertys.conf
+[Mon May 12 10:42:11 2025] - Se ha cargado la configuracion del programa
+[Mon May 12 10:42:11 2025] - Se ha cerrado el fichero propertys.conf
+[Mon May 12 10:42:13 2025] - Iniciando memoria compartida...
+[Mon May 12 10:42:13 2025] - Se ha superado el maximo de usuarios en memoria
+[Mon May 12 10:42:13 2025] - Se ha creado la memoria compartida
+[Mon May 12 10:42:13 2025] - Se ha iniciado el buffer
+[Mon May 12 10:42:13 2025] - El buffer ha acabado de guardar los datos en el archivo
+[Mon May 12 10:42:15 2025] - El usuario con PID 5968 ha inciado sesion
+[Mon May 12 10:42:15 2025] - El usuario con PID 5968 ha abierto la memoria compartida
+[Mon May 12 10:42:15 2025] - El usuario con PID 5968 ha leido la memoria compartida
+[Mon May 12 10:42:20 2025] - El usuario con PID 5968 ha iniciado una tranferencia
+[Mon May 12 10:42:22 2025] - El usuario con PID 5968 ha intentado tranferir a un usuario que no existe
+[Mon May 12 10:42:35 2025] - El usuario con PID 5968 ha cerrado sesion
+[Mon May 12 10:43:43 2025] - ---------------------------
+[Mon May 12 10:43:43 2025] - Inciando banco
+[Mon May 12 10:43:43 2025] - Se esta cargando la configuracion del banco
+[Mon May 12 10:43:43 2025] - Se ha abierto el fichero propertys.conf
+[Mon May 12 10:43:43 2025] - Se ha cargado la configuracion del programa
+[Mon May 12 10:43:43 2025] - Se ha cerrado el fichero propertys.conf
+[Mon May 12 10:43:45 2025] - Iniciando memoria compartida...
+[Mon May 12 10:43:45 2025] - Se ha superado el maximo de usuarios en memoria
+[Mon May 12 10:43:45 2025] - Se ha creado la memoria compartida
+[Mon May 12 10:43:45 2025] - Se ha iniciado el buffer
+[Mon May 12 10:43:45 2025] - El buffer ha acabado de guardar los datos en el archivo
+[Mon May 12 10:43:50 2025] - El usuario con PID 6063 ha inciado sesion
+[Mon May 12 10:43:50 2025] - El usuario con PID 6063 ha abierto la memoria compartida
+[Mon May 12 10:43:50 2025] - El usuario con PID 6063 ha leido la memoria compartida
+[Mon May 12 10:43:52 2025] - El usuario con PID 6063 ha iniciado una tranferencia
+[Mon May 12 10:43:54 2025] - El usuario con PID 6063 ha intentado tranferir a un usuario que no existe
+[Mon May 12 10:45:18 2025] - El usuario con PID 6063 ha cerrado sesion
+[Mon May 12 10:45:25 2025] - ---------------------------
+[Mon May 12 10:45:25 2025] - Inciando banco
+[Mon May 12 10:45:25 2025] - Se esta cargando la configuracion del banco
+[Mon May 12 10:45:25 2025] - Se ha abierto el fichero propertys.conf
+[Mon May 12 10:45:25 2025] - Se ha cargado la configuracion del programa
+[Mon May 12 10:45:25 2025] - Se ha cerrado el fichero propertys.conf
+[Mon May 12 10:45:28 2025] - Iniciando memoria compartida...
+[Mon May 12 10:45:28 2025] - Se ha superado el maximo de usuarios en memoria
+[Mon May 12 10:45:28 2025] - Se ha creado la memoria compartida
+[Mon May 12 10:45:28 2025] - Se ha iniciado el buffer
+[Mon May 12 10:45:28 2025] - El buffer ha acabado de guardar los datos en el archivo
+[Mon May 12 10:45:30 2025] - El usuario con PID 6177 ha inciado sesion
+[Mon May 12 10:45:30 2025] - El usuario con PID 6177 ha abierto la memoria compartida
+[Mon May 12 10:45:30 2025] - El usuario con PID 6177 ha leido la memoria compartida
+[Mon May 12 10:45:33 2025] - El usuario con PID 6177 ha iniciado una tranferencia
+[Mon May 12 10:45:34 2025] - El usuario con PID 6177 ha intentado tranferir a un usuario que no existe
+[Mon May 12 10:46:49 2025] - ---------------------------
+[Mon May 12 10:46:49 2025] - Inciando banco
+[Mon May 12 10:46:49 2025] - Se esta cargando la configuracion del banco
+[Mon May 12 10:46:49 2025] - Se ha abierto el fichero propertys.conf
+[Mon May 12 10:46:49 2025] - Se ha cargado la configuracion del programa
+[Mon May 12 10:46:49 2025] - Se ha cerrado el fichero propertys.conf
+[Mon May 12 10:46:51 2025] - Iniciando memoria compartida...
+[Mon May 12 10:46:51 2025] - Se ha superado el maximo de usuarios en memoria
+[Mon May 12 10:46:51 2025] - Se ha creado la memoria compartida
+[Mon May 12 10:46:51 2025] - Se ha iniciado el buffer
+[Mon May 12 10:46:51 2025] - El buffer ha acabado de guardar los datos en el archivo
+[Mon May 12 10:46:55 2025] - El usuario con PID 6269 ha inciado sesion
+[Mon May 12 10:46:55 2025] - El usuario con PID 6269 ha abierto la memoria compartida
+[Mon May 12 10:46:55 2025] - El usuario con PID 6269 ha leido la memoria compartida
+[Mon May 12 10:46:58 2025] - El usuario con PID 6269 ha iniciado una tranferencia
+[Mon May 12 10:46:59 2025] - El usuario con PID 6269 ha intentado tranferir a un usuario que no existe
+[Mon May 12 10:47:26 2025] - Usuario con PID 6269 saliendo de manera forzada por motivo del banco...
+[Mon May 12 10:47:26 2025] - Cerrando banco de manera segura
+[Mon May 12 10:47:28 2025] - ----------------------
+[Mon May 12 10:48:50 2025] - ---------------------------
+[Mon May 12 10:48:50 2025] - Inciando banco
+[Mon May 12 10:48:50 2025] - Se esta cargando la configuracion del banco
+[Mon May 12 10:48:50 2025] - Se ha abierto el fichero propertys.conf
+[Mon May 12 10:48:50 2025] - Se ha cargado la configuracion del programa
+[Mon May 12 10:48:50 2025] - Se ha cerrado el fichero propertys.conf
+[Mon May 12 10:48:53 2025] - Iniciando memoria compartida...
+[Mon May 12 10:48:53 2025] - Se ha superado el maximo de usuarios en memoria
+[Mon May 12 10:48:53 2025] - Se ha creado la memoria compartida
+[Mon May 12 10:48:53 2025] - Se ha iniciado el buffer
+[Mon May 12 10:48:53 2025] - El buffer ha acabado de guardar los datos en el archivo
+[Mon May 12 10:48:55 2025] - El usuario con PID 6357 ha inciado sesion
+[Mon May 12 10:48:55 2025] - El usuario con PID 6357 ha abierto la memoria compartida
+[Mon May 12 10:48:55 2025] - El usuario con PID 6357 ha leido la memoria compartida
+[Mon May 12 10:48:57 2025] - El usuario con PID 6357 ha iniciado una tranferencia
+[Mon May 12 10:49:00 2025] - El usuario con PID 6357 ha tranferido dinero
+[Mon May 12 10:49:07 2025] - Se ha iniciado el buffer
+[Mon May 12 10:49:07 2025] - El buffer ha acabado de guardar los datos en el archivo
+[Mon May 12 10:49:37 2025] - Usuario con PID 6357 saliendo de manera forzada...
+[Mon May 12 10:49:40 2025] - Usuario con PID 6177 saliendo de manera forzada...
+[Mon May 12 10:49:43 2025] - Cerrando banco de manera segura
+[Mon May 12 10:49:46 2025] - ----------------------
+[Mon May 12 10:49:51 2025] - ---------------------------
+[Mon May 12 10:49:51 2025] - Inciando banco
+[Mon May 12 10:49:51 2025] - Se esta cargando la configuracion del banco
+[Mon May 12 10:49:51 2025] - Se ha abierto el fichero propertys.conf
+[Mon May 12 10:49:51 2025] - Se ha cargado la configuracion del programa
+[Mon May 12 10:49:51 2025] - Se ha cerrado el fichero propertys.conf
+[Mon May 12 10:49:54 2025] - Iniciando memoria compartida...
+[Mon May 12 10:49:54 2025] - Se ha superado el maximo de usuarios en memoria
+[Mon May 12 10:49:54 2025] - Se ha creado la memoria compartida
+[Mon May 12 10:49:54 2025] - Se ha iniciado el buffer
+[Mon May 12 10:49:54 2025] - El buffer ha acabado de guardar los datos en el archivo
+[Mon May 12 10:50:05 2025] - El usuario con PID 6427 ha inciado sesion
+[Mon May 12 10:50:05 2025] - El usuario con PID 6427 ha abierto la memoria compartida
+[Mon May 12 10:50:05 2025] - El usuario con PID 6427 ha leido la memoria compartida
+[Mon May 12 10:50:09 2025] - El usuario con PID 6427 ha iniciado una tranferencia
+[Mon May 12 10:50:28 2025] - El usuario con PID 6427 ha tranferido dinero
+[Mon May 12 10:50:36 2025] - Se ha iniciado el buffer
+[Mon May 12 10:50:36 2025] - El buffer ha acabado de guardar los datos en el archivo
+[Mon May 12 10:51:05 2025] - El usuario con PID 6427 ha cerrado sesion
+[Mon May 12 10:51:10 2025] - Cerrando banco de manera segura
+[Mon May 12 10:51:12 2025] - ----------------------
