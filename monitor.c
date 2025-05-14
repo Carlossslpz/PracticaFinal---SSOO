@@ -55,7 +55,7 @@ typedef struct
 
     //Aqui guardo una tupla con el id de USUARIO_MONITOR y las veces que ha tranferido ej;
     //[1][2] al USUARIO_MONITOR 1 le ha tranferido 2 veces , tal que mas de 3 por sesion es fraude 
-    int usuarios_transferidos[2][200];
+    int usuarios_transferidos[200][2];
     int n_usus_trans;
     
 }USUARIO_MONITOR;
@@ -183,8 +183,11 @@ int main(int argc , char * argv[])
 
    leerMemoriaCompartida();
 
+   
+
     for (i = 0; i<listaUsers->n_users;i++)
     {
+       
         snprintf(mensaje,sizeof(mensaje),"Monitor con pid %d empieza a analizar al usuario %d",pid_programa,listaUsers->lista[i].id);
         escribirLog(mensaje);
         //Creamos el usuario para
@@ -362,6 +365,9 @@ void * buscarIngresosMaximos(void * arg)
     char *fecha,* id,*operacion,*cantidad;
     char *nombre_fichero;
 
+    char * alertas[400];
+    int alertas_index = 0;
+
     nombre_fichero = (char *)arg;
 
     escribirLog("Monitor empieza a buscar ingresos maximos");
@@ -412,7 +418,7 @@ void * buscarIngresosMaximos(void * arg)
             {
                 //Si el ingreso es mayor al maximo lo notificamos
                 snprintf(mensaje,sizeof(mensaje),"1-ALERTA: USUARIO CON ID %s HA SUPERADO LA MAXIMA CANTIDAD DE INGRESOS EL DIA %s\n",id,fecha);
-                escribirBanco(mensaje);              
+                alertas[alertas_index++] = strdup(mensaje);            
             }
                 
             
@@ -422,6 +428,12 @@ void * buscarIngresosMaximos(void * arg)
 
     //Una vez que hemos terminado de leer el fichero lo cerramos
     fclose(fichero);
+
+    for (i = 0; i<alertas_index;i++)
+    {
+        escribirBanco(alertas[i]);
+        free(alertas[i]);
+    }
 
     escribirLog("Monitor ha terminado de buscar ingresos maximos raros");
     //Liberamos el hilo
@@ -444,6 +456,8 @@ void * buscarTotalIngresos(void * arg)
     char *fecha,* id,*operacion,*cantidad;
     char *nombre_fichero;
 
+    char * alertas[400];
+    int alertas_index = 0;
     nombre_fichero = (char *)arg;
 
     escribirLog("Monitor empieza a buscar ingresos totales sospechosos");
@@ -494,7 +508,7 @@ void * buscarTotalIngresos(void * arg)
             {
                 //Si el ingreso es mayor al maximo lo notificamos
                 snprintf(mensaje,sizeof(mensaje),"1-ALERTA: USUARIO CON ID %s HA SUPERADO EL TOTAL DE INGRESOS EL DIA %s\n",id,fecha);
-                escribirBanco(mensaje);              
+                alertas[alertas_index++] = strdup(mensaje);
             }
               
             
@@ -505,6 +519,12 @@ void * buscarTotalIngresos(void * arg)
     //Una vez que hemos terminado de leer el fichero lo cerramos
     fclose(fichero);
 
+    for (i = 0; i<alertas_index;i++)
+    {
+        escribirBanco(alertas[i]);
+        free(alertas[i]);
+        usleep(10000);
+    }
     escribirLog("Monitor ha terminado de buscar ingresos maximos raros");
     //Liberamos el hilo
     sem_post(semaforo_hilos);
@@ -527,6 +547,9 @@ void * buscarRetirosMaximos(void * arg)
     char mensaje[400],linea[255];
     char *fecha,* id,*operacion,*cantidad;
     char *nombre_fichero;
+
+    char * alertas[400];
+    int alertas_index = 0;
 
     nombre_fichero = (char *)arg;
 
@@ -578,7 +601,7 @@ void * buscarRetirosMaximos(void * arg)
             {
                 //Si el ingreso es mayor al maximo lo notificamos
                 snprintf(mensaje,sizeof(mensaje),"1-ALERTA: USUARIO CON ID %s HA SUPERADO LA MAXIMA CANTIDAD DE RETIROS EL DIA %s\n",id,fecha);
-                escribirBanco(mensaje);              
+                alertas[alertas_index++] = strdup(mensaje);              
             }
                 
             
@@ -588,6 +611,13 @@ void * buscarRetirosMaximos(void * arg)
 
     //Una vez que hemos terminado de leer el fichero lo cerramos
     fclose(fichero);
+
+    for (i = 0; i<alertas_index;i++)
+    {
+        escribirBanco(alertas[i]);
+        free(alertas[i]);
+        usleep(10000);
+    }
 
     escribirLog("Monitor ha terminado de buscar retiros maximos sospechosos...");
     //Liberamos el hilo
@@ -608,6 +638,9 @@ void * buscarTotalRetiros(void * arg)
     char mensaje[400],linea[255];
     char *fecha,* id,*operacion,*cantidad;
     char *nombre_fichero;
+
+    char * alertas[400];
+    int alertas_index = 0;
 
     nombre_fichero = (char *)arg;
 
@@ -659,7 +692,7 @@ void * buscarTotalRetiros(void * arg)
             {
                 //Si el ingreso es mayor al maximo lo notificamos
                 snprintf(mensaje,sizeof(mensaje),"1-ALERTA: USUARIO CON ID %s HA SUPERADO EL TOTAL DE RETIROS EL DIA %s\n",id,fecha);
-                escribirBanco(mensaje);              
+                alertas[alertas_index++] = strdup(mensaje);
             }
             
 
@@ -671,6 +704,13 @@ void * buscarTotalRetiros(void * arg)
 
     //Una vez que hemos terminado de leer el fichero lo cerramos
     fclose(fichero);
+
+    for (i = 0; i<alertas_index;i++)
+    {
+        escribirBanco(alertas[i]);
+        free(alertas[i]);
+        usleep(10000);
+    }
 
     escribirLog("Monitor ha terminado de buscar total de retiros sospechosos...");
     //Liberamos el hilo
@@ -696,6 +736,9 @@ void * buscarTransferenciasMaximas(void * arg)
     char mensaje[400],linea[255];
     char *fecha,* id,*operacion,*cantidad;
     char *nombre_fichero;
+
+    char * alertas[400];
+    int alertas_index = 0;
 
     nombre_fichero = (char *)arg;
 
@@ -747,7 +790,7 @@ void * buscarTransferenciasMaximas(void * arg)
             {
                 //Si el ingreso es mayor al maximo lo notificamos
                 snprintf(mensaje,sizeof(mensaje),"1-ALERTA: USUARIO CON ID %s HA SUPERADO LA MAXIMA CANTIDAD DE TRANSFERENCIAS EL DIA %s\n",id,fecha);
-                escribirBanco(mensaje);              
+                alertas[alertas_index++] = strdup(mensaje);              
             }
            
             
@@ -757,6 +800,13 @@ void * buscarTransferenciasMaximas(void * arg)
 
     //Una vez que hemos terminado de leer el fichero lo cerramos
     fclose(fichero);
+
+    for (i = 0; i<alertas_index;i++)
+    {
+        escribirBanco(alertas[i]);
+        free(alertas[i]);
+        usleep(10000);
+    }
 
     escribirLog("Monitor ha terminado de buscar transferencias maximas sospechosos...");
     //Liberamos el hilo
@@ -778,6 +828,9 @@ void * buscarTotalTransferencias(void * arg)
     char mensaje[400],linea[255];
     char *fecha,* id,*operacion,*cantidad;
     char *nombre_fichero;
+
+    char * alertas[400];
+    int alertas_index = 0;
 
     nombre_fichero = (char *)arg;
 
@@ -829,7 +882,7 @@ void * buscarTotalTransferencias(void * arg)
             {
                 //Si el ingreso es mayor al maximo lo notificamos
                 snprintf(mensaje,sizeof(mensaje),"1-ALERTA: USUARIO CON ID %s HA SUPERADO EL TOTAL DE TRANSFERENCIAS EL DIA %s\n",id,fecha);
-                escribirBanco(mensaje);              
+                alertas[alertas_index++] = strdup(mensaje);            
             }
 
             
@@ -838,6 +891,13 @@ void * buscarTotalTransferencias(void * arg)
 
     //Una vez que hemos terminado de leer el fichero lo cerramos
     fclose(fichero);
+
+    for (i = 0; i<alertas_index;i++)
+    {
+        escribirBanco(alertas[i]);
+        free(alertas[i]);
+        usleep(10000);
+    }
 
     escribirLog("Monitor ha terminado de buscar total de transferencias sospechosos...");
     //Liberamos el hilo
@@ -864,6 +924,9 @@ void * buscarTransferenciasEntreCuentas(void * arg)
     char *fecha,* id,*operacion,*cantidad,*id_tranf;
     bool encontrado = false;
     char * fichero_user = arg;
+    char * alertas[255];
+    int num_alertas = 0;
+    
 
     escribirLog("Monitor empieza a buscar multiples transferencias entre cuentas en un dia");
     fichero = fopen(fichero_user,"r");
@@ -913,8 +976,9 @@ void * buscarTransferenciasEntreCuentas(void * arg)
             
             encontrado = false;
             //Para cada user miramos su lista de tranferidoas a ver si h atransferido a alguien
-            for ( k = 0; k<=user.n_usus_trans;k++)
+            for ( k = 0; k<user.n_usus_trans;k++)
             {
+    
                 if (user.usuarios_transferidos[k][0] == atoi(id_tranf))
                 {
                     encontrado = true;
@@ -932,7 +996,9 @@ void * buscarTransferenciasEntreCuentas(void * arg)
                 {
                     //Si el ingreso es mayor al maximo lo notificamos
                     snprintf(mensaje,sizeof(mensaje),"1-ALERTA: USUARIO CON ID %s HA SUPERADO EL MAXIMO NUMERO DE TRANSFERENCIAS ENTRE CUENTAS CON %s EL DIA %s\n",id,id_tranf,fecha);
-                    escribirBanco(mensaje);
+                    alertas[num_alertas] = strdup(mensaje);
+                    num_alertas++;
+                    
                 }
                 
                 //Si el numero de transferencias entre cuentas es mayor al maximo lo notificamos
@@ -940,9 +1006,11 @@ void * buscarTransferenciasEntreCuentas(void * arg)
             }
             else 
             {
-                //Sino esta le agregamos 
-                user.usuarios_transferidos[user.n_usus_trans++][0] = atoi(id_tranf);
+                
+                //Sino esta le agregamos
+                user.usuarios_transferidos[user.n_usus_trans][0] = atoi(id_tranf);
                 user.usuarios_transferidos[user.n_usus_trans][1] = 1;
+                user.n_usus_trans++;
             }
             
         }
@@ -953,6 +1021,13 @@ void * buscarTransferenciasEntreCuentas(void * arg)
 
     //Una vez que hemos terminado de leer el fichero lo cerramos
     fclose(fichero);
+
+    for ( j = 0; j<num_alertas;j++)
+    {
+        escribirBanco(alertas[j]);
+        free(alertas[j]);
+        usleep(10000); // 10ms de espera para dar tiempo a leer
+    }
 
     escribirLog("Monitor ha terminado de buscar multiples transferencias entre cuentas");
     //Liberamos el hilo

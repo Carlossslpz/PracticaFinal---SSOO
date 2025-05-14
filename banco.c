@@ -21,6 +21,7 @@ void listarUsuariosEnMemoria();
 int remplazarUsuario(char * datos);
 char * buscarUserEnFichero(int user_id);
 void guardarFichero();
+void listarPids();
 //Declaramos las variables globales asi como las estruturas necesarias
 
 typedef struct propiedades
@@ -284,8 +285,10 @@ void  modifificarArrayProcesos(char * codigo)
     pid_char = strtok(NULL,"-");
 
     pid = (pid_t) atoi(pid_char);
+    eliminar = false;
     for (i = 0; i<PROPS.n_procesos_activos;i++)
     {
+        
         if (pid == PROPS.arraypids[i])
         {
             //En caso de que el pid coincida es que el proceso se ha cerrado por lo que hay que eliminar dicho proceso del array
@@ -295,13 +298,14 @@ void  modifificarArrayProcesos(char * codigo)
         }
     }
     //Si no ha habido coincidencias es que el pid es nuevo por tanto se agrega
-    if (!eliminar) PROPS.arraypids[PROPS.n_procesos_activos ++ ] = pid;
-        
+    if (!eliminar) PROPS.arraypids[PROPS.n_procesos_activos ++ ] = pid;  
     else
     {
         //hacemos como en una pila, ponemos el que hay que eliminar al final y decrementamos el indice de tal manera
         //que aunque siga ahí no se contabilizara y cuando llegue uno nuevo lo sobreescribira
-        PROPS.arraypids[i]= PROPS.arraypids[PROPS.n_procesos_activos -1 ];
+        aux = PROPS.arraypids[i];
+        PROPS.arraypids[i] = PROPS.arraypids[PROPS.n_procesos_activos - 1];
+        PROPS.arraypids[PROPS.n_procesos_activos - 1] = aux;
         PROPS.n_procesos_activos --;
     }
    
@@ -309,6 +313,15 @@ void  modifificarArrayProcesos(char * codigo)
     
     return; 
 
+}
+
+void listarPids()
+{
+    int i;
+    for (i = 0; i<PROPS.n_procesos_activos;i++)
+    {
+        printf("El pid %d esta activo\n",PROPS.arraypids[i]);
+    }
 }
 
 void * leerMensajes(void * arg)
@@ -359,6 +372,8 @@ void * leerMensajes(void * arg)
                 //ya que solo hay un hilo y varios programas, por tanto no se sabe de donde viene el mensaje, pero 
                 //0-x pid para controlar los procesos activos
                 //1-x mensaje de alerta del monitor
+                //2-x mensaje de inicio del buffer
+                //3-x mensaje para remplazar un usuario en memoria por el que le llega
                 //nada - mensaje que nos envian porgramas cuando no pueden escribir en sus logs
                 //por si el banco puede para reflejar el error
                 if ( mensaje[0] == '0') modifificarArrayProcesos(mensaje);
@@ -715,7 +730,7 @@ void menu()
     
     while (opcion != 7)
     {
-        system("clear");
+        //system("clear");
         printf("\nBienvenido al Banco\n");
         printf("1-Login\n");
         printf("2-Crear Cuenta\n");

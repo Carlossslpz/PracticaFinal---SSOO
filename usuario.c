@@ -40,6 +40,7 @@ void escribirTransacciones(DATA d);
 void modificarFicheroCuentas(DATA d);
 void leerMemoriaCompartida();
 char * buscarUsuarioEnFichero(char * fichero,int id_user);
+int buscarEnMemoria(int id);
 
 
 
@@ -210,7 +211,7 @@ void seniales(int senial)
         escribirBanco(mensaje);
         
         sleep(1);    
-        exit(0);
+        _exit(0);
 
     }
     else if (senial == SIGUSR1)
@@ -249,7 +250,7 @@ void seniales(int senial)
         escribirLog(mensaje);}
 
         sleep(1);
-        exit(0);
+        _exit(0);
     }
 }
 
@@ -436,10 +437,12 @@ void *Retiro(void *args)
     char mensaje[255];
     char *respuesta;
     float cantidad;
+    int i;
    
     snprintf(mensaje,sizeof(mensaje),"El usuario con PID %d ha iniciado un retiro",pid_programa);
     escribirLog(mensaje);
     
+    i = buscarEnMemoria(User.num_cuenta);
     
    
     printf("Introduce la cantidad a retirar: ");
@@ -447,7 +450,7 @@ void *Retiro(void *args)
 
     
     //Hacemos comprobaciones basicas de lado del usuario
-    if (User.saldo - cantidad < 0)
+    if (listaUsers->lista[i].saldo - cantidad < 0)
     {
         snprintf(mensaje,sizeof(mensaje),"El usuario con PID %d ha intentado sacar mas dinero del que tiene",pid_programa);
         escribirLog(mensaje);
@@ -520,14 +523,15 @@ void *Transferencia(void *args)
     char * usuario;
     char mensaje[255];
     float cantidadTransfer;
+    int i;
    
     snprintf(mensaje,sizeof(mensaje),"El usuario con PID %d ha iniciado una tranferencia",pid_programa);
     escribirLog(mensaje);
 
 
 
-   
-   
+   i = buscarEnMemoria(User.num_cuenta);
+
    //Iniciamos las variables para que no haya fallos
     idTransfer = 0;
     cantidadTransfer = 0;
@@ -605,7 +609,7 @@ void *Transferencia(void *args)
         return NULL;
     }
 
-    if (User.saldo - cantidadTransfer < 0)
+    if (listaUsers->lista[i].saldo - cantidadTransfer < 0)
     {
         snprintf(mensaje,sizeof(mensaje),"El usuario con PID %d ha intentado tranferir mas dinero del que tiene",pid_programa);
         escribirLog(mensaje);
@@ -863,9 +867,9 @@ void escribirBanco(char * mensaje)
 
 // Nombre: buscarUser
 // Retorno: void*
-// Parámetros: void *arg, aunque se le pasa una estrutura DATAUSER
-// Uso: Esta función busca un usuario en el archivo de cuentas utilizando el ID proporcionado, 
-//      si encuentra el usuario, actualiza los datos del usuario en la estructura correspondiente. 
+// Parámetros: void *arg, aunque se le pasa un id
+// Uso: Esta función busca el usuario en memoria utilizando el ID proporcionado, 
+//      si encuentra el usuario, devuelve true. 
 //      Usa semaforos para sincronizar los recursos y evitar fallos
 
 bool buscarUser(int id)
@@ -1077,4 +1081,22 @@ void leerMemoriaCompartida()
     snprintf(mensaje,sizeof(mensaje),"El usuario con PID %d ha leido la memoria compartida",pid_programa);
     escribirLog(mensaje);
 
+}
+
+int buscarEnMemoria(int id)
+{
+    int i;
+    sem_wait(semaforo_memoria);
+    for (i = 0; i<listaUsers->n_users;i++)
+    {
+        if ( listaUsers->lista[i].id == id)
+        {
+            sem_post(semaforo_memoria);
+            semaforos_usados[1] = 0;
+            return i;
+        }
+    }
+    sem_post(semaforo_memoria);
+    semaforos_usados[1] = 0;
+    return -1;
 }

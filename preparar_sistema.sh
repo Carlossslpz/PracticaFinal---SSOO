@@ -13,7 +13,7 @@ password="banco"
 usuario="banco"
 grupo="banco"
 directorio="ficheros"
-ficheros=("cuentas.dat" "control.log" "transacciones.log")
+ficheros=("cuentas.dat" "control.log")
 
 
 #Primero vemos si el grupo existe
