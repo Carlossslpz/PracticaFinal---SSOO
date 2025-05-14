@@ -730,7 +730,7 @@ void menu()
     
     while (opcion != 7)
     {
-        //system("clear");
+        system("clear");
         printf("\nBienvenido al Banco\n");
         printf("1-Login\n");
         printf("2-Crear Cuenta\n");
