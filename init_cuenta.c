@@ -291,6 +291,7 @@ void  menu(char * file)
     strncpy(listaUsers->lista[i].fichero, fichero, sizeof(listaUsers->lista[i].fichero) - 1);
     listaUsers->lista[i].fichero[sizeof(listaUsers->lista[i].fichero) - 1] = '\0';
     free(fichero);
+    escribirBanco("2");
    
     //Datos para el usuario importantes
     printf("Cuenta creada...\n");
@@ -338,7 +339,6 @@ int contarLineas(char * file)
     while (fgets(linea,sizeof(linea),fichero) != NULL)
     {
         contador++;
-        printf("%s",linea);
     }
     fclose(fichero);
     //Notificamos que se ha cerrado el fichero
