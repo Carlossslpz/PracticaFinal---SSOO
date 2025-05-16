@@ -1103,6 +1103,9 @@ void generarMemoriaCompartida()
 //Parametros: int
 //Uso: Esta funcion se encarga de crear el archivo de transacciones de cada usuario en funcion a su ID
 //      Este archivo se crea en un directorio propio con mismo ID del usuario
+//      Ademas de esto se encarga de asegurarse de que no hayan problemas de carrera con semáforos
+//      Devuelve el nombre del archivo creado
+//      En caso de error devuelve NULL
 char * crearArchivoUsuario(int id_usuario)
 {
     char directorio[256];
@@ -1180,7 +1183,7 @@ void inicializarArchivosUsuarios(void)
 //Parametros: void *
 //Uso: Esta funcion se encarga de guardar los datos en el fichero de transacciones cada cierto tiempo
 //      Este tiempo se define en el fichero de configuracion
-//      Este buffer se encarga de asegurarse de que no hayan problemas de carrera con semáforos
+//      Ademasel buffer se encarga de asegurarse de que no hayan problemas de carrera con semáforos
 void *Buffer(void * arg)
 {
     int t_espera = PROPS.tiempo_buffer;
@@ -1224,7 +1227,7 @@ void *Buffer(void * arg)
 
 
 
-//Nombre: guardarFichero
+//Nombre: listarUsuariosEnMemoria
 //Retorno: void
 //Parametros: Ninguno
 //Uso: Esta funcion se encarga listar los usuarios en memoria compartida
@@ -1257,6 +1260,9 @@ void listarUsuariosEnMemoria()
 //Parametros: int
 //Uso: Esta funcion se encarga de buscar un usuario en el fichero de cuentas
 //     Se usa en caso de que el usuario no este en memoria compartida
+//     Devolvemos la cadena con los datos del usuario
+//     En caso de error devolvemos NULL
+//     Ademas de esto se encarga de asegurarse de que no hayan problemas de carrera con semáforos
 char * buscarUserEnFichero(int id_buscar)
 {
     FILE * fichero;
@@ -1314,6 +1320,8 @@ char * buscarUserEnFichero(int id_buscar)
 //      Este usuario es el que se ha leido del fichero de cuentas
 //      Este remplazo se hace en caso de que el usuario no este activo
 //      Este tambien se encarga de asegurarse de que no hayan problemas de carrera con semáforos
+//      Devuelve el id del usuario que se ha remplazado
+//      En caso de error devuelve -1
 int  remplazarUsuario(char * datos)
 {
     int i;
@@ -1368,6 +1376,8 @@ int  remplazarUsuario(char * datos)
 //Parametros: Ninguno
 //Uso: Esta funcion se encarga de guardar los datos de los usuarios en el fichero de cuentas
 //      Este fichero se guarda en el formato nombre;id;saldo;transacciones
+//      Ademas de esto se encarga de asegurarse de que no hayan problemas de carrera con semáforos
+
 void guardarFichero()
 {
     //Creamos las variables

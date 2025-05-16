@@ -656,6 +656,12 @@ void *Transferencia(void *args)
     return NULL;   
 
 }
+// Nombre: buscarUsuarioEnFichero
+// Retorno: char*
+// Parámetros: char * fichero,int id_user
+// Uso: Esta función busca un usuario en un archivo de cuentas utilizando su ID.
+//      Si encuentra el usuario, devuelve una cadena con la información del usuario.
+//      Utiliza semáforos para asegurar el acceso exclusivo al archivo y sincronizar
 
 char * buscarUsuarioEnFichero(char * fichero,int id_user)
 {
@@ -719,6 +725,7 @@ void *ConsultarSaldo(void *args)
     
     //Creamos las variables
     int i;
+    float saldo;
     DATA d;
     char mensaje[255];
 
@@ -744,9 +751,10 @@ void *ConsultarSaldo(void *args)
     {
         if (listaUsers->lista[i].id == User.num_cuenta) break;
     }
-    printf("Tu saldo es: %.2f\n", listaUsers->lista[i].saldo);
+    saldo = listaUsers->lista[i].saldo;
     sem_post(semaforo_memoria);
     semaforos_usados[1] = 0;
+    printf("Tu saldo es: %.2f\n", saldo);
     printf("Pulse una tecla para continuar...\n");
     //Limpiamos el buffer para posibles problemas con getchar()
     while(getchar() != '\n');
@@ -1013,7 +1021,11 @@ void escribirLog(char * mensaje)
 }
 
 
-
+// Nombre: obtener_fecha
+// Retorno: char*
+// Parámetros: void
+// Descripción: Esta función obtiene la fecha actual en formato "DD/MM/AAAA".
+//              Utiliza la biblioteca time.h para obtener la fecha y hora del sistema.
 char* obtener_fecha() 
 {
     static char fecha[255]; // DD/MM/AAAA + \0
@@ -1083,6 +1095,13 @@ void leerMemoriaCompartida()
 
 }
 
+// Nombre: buscarEnMemoria
+// Retorno: int
+// Parámetros: int id
+// Uso: Esta función busca un usuario en la memoria compartida utilizando su ID.
+//      Si lo encuentra, devuelve el índice del usuario en la lista de usuarios.
+//      Si no lo encuentra, devuelve -1.
+//      Utiliza semáforos para asegurar el acceso exclusivo a la memoria compartida.
 int buscarEnMemoria(int id)
 {
     int i;
