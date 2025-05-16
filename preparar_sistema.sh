@@ -89,6 +89,7 @@ for x in ./*; do
         #2.Dejamos el fichero .c solo con permisos de lectura y escritura, ya que no necesita mas
         if [ "$extension" == "c" ]; then
             if [ "$nombre" == "comun" ]; then
+                chown "$usuario:$grupo" "$fichero"
                 continue
             fi
             # Compilamos el fichero
@@ -101,7 +102,7 @@ for x in ./*; do
 
         #Si el fichero tiene el mismo nombre que la extension es que es un archivo compilado
         #Por lo que le cambiamos los permisos y el propietario y le dejamos los permisos de ejecucion
-        elif [ "$extension" == "$fichero" ]; then
+        elif [ "$extension" == "$fichero" ] && [ "$fichero" != "LICENSE" ]; then
             chmod 770 "$x"
             chown "$usuario:$grupo" "$fichero"
         #Este .sh es este script por lo que lo dejmos como esta, y si por si acaso se han cambiado los permisos
