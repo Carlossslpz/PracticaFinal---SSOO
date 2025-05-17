@@ -119,8 +119,9 @@ done
 
 echo "Se han compilado los ficheros y creado los ficheros necesarios"
 echo "Para inciar el sistema ejecute cambie el ususario a $usuario" 
-echo "1º su $usuario"
-echo "2º contraseña: $password"
+echo "1º Usuario: $usuario"
+echo "2º Contraseña: $password"
+echo "En la cuenta de banco vaya a $(pwd)"
 echo "Y ejecute ./banco <ruta_fichero_configuracion.conf>"
 
 
