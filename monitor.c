@@ -77,12 +77,10 @@ typedef struct
 MEMORIA * listaUsers;
 MAXIMOS maximos;
 char *fichero_log_global;
-LISTAUSERS listaUsuariosMonitor;
 LISTAFECHAS listaFechas;
 pid_t pid_programa,pid_banco;
 sem_t *semaforo_hilos,*semaforo_log,*semaforo_trans,*semaforo_fifo,*semaforo_memoria;
-pthread_mutex_t sem_fifo;
-int semaforos_usados[4];
+int semaforos_usados[4], fd_memoria;
 USUARIO_MONITOR user;
 
 
@@ -222,13 +220,14 @@ int main(int argc , char * argv[])
     }
     
 
-   
+   close(fd_memoria);
 
     snprintf(mensaje,sizeof(mensaje),"Monitor con pid %d ha terminado",pid_programa);
     escribirLog(mensaje);
     //Avisamos al banco que hemos terminado
     snprintf(mensaje,sizeof(mensaje),"0-%d",pid_programa);
     escribirBanco(mensaje);
+
 
 
     return 0;
@@ -1040,83 +1039,6 @@ void * buscarTransferenciasEntreCuentas(void * arg)
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 //----------------------------------------------------------OTROS-------------------------------------------------------------
 //Nombre: escribirLog.
 //Retorno: void.
@@ -1217,7 +1139,7 @@ void  escribirBanco(char * mensaje)
 void leerMemoriaCompartida()
 {
     
-    int i,fd_memoria;
+    int i;
     char linea[255],mensaje[255];
     snprintf(mensaje,sizeof(mensaje),"Monitor con pid %d empieza a leer la memoria compartida",pid_programa);
     escribirLog(mensaje);

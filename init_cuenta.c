@@ -19,7 +19,7 @@ bool activo;
 char *fichero_log;
 pid_t pid_programa;
 sem_t *semaforo_cuentas,*semaforo_log,*semaforo_fifo,*semaforo_memoria;
-int semaforos_usados[4];
+int semaforos_usados[4],fd_memoria;
 MEMORIA * listaUsers;
 
 
@@ -113,6 +113,7 @@ int main(int argc, char *argv[])
 
         //Notificamos al banco que se ha cerrado el programa
 
+        close(fd_memoria);
         snprintf(mensaje,sizeof(mensaje),"0-%d",pid_programa);
         escribirBanco(mensaje);
 
@@ -139,9 +140,8 @@ int main(int argc, char *argv[])
 void leerMemoriaCompartida()
 {
     
-    int i,fd_memoria;
+    int i;
     char linea[255],mensaje[255];
-    char *id,*nombre,*saldo,*trasn;
 
     snprintf(mensaje,sizeof(mensaje),"Init cuentas ha abierto la memoria compartida");
     escribirLog(mensaje);

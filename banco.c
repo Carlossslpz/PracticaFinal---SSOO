@@ -1041,7 +1041,7 @@ void generarMemoriaCompartida()
     }
 
     //Mapeamos la memoria compartida para poder acceder a ella
-    listaUsers = mmap(0,(sizeof(MEMORIA) * MAX_USUARIO),PROT_WRITE | PROT_READ,MAP_SHARED,fd_memoria,0);
+    listaUsers = mmap(0,sizeof(MEMORIA),PROT_WRITE | PROT_READ,MAP_SHARED,fd_memoria,0);
     if ( listaUsers == MAP_FAILED)
     {
         escribirLog("Fallo al mapear memoria compartida");

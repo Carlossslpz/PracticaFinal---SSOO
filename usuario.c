@@ -52,6 +52,7 @@ CONFIGURACION_USER User;
 sem_t * semaforo_hilos, *semaforo_memoria,*semaforo_trans,*semaforo_log,*semaforo_fifo,*semaforo_cuentas;
 //Esto lo uso para la hora del cierre 
 int semaforos_usados[5];
+int fd_memoria;
 
 
 
@@ -205,7 +206,7 @@ void seniales(int senial)
         printf("%s\n",mensaje);
         escribirLog(mensaje);}
 
-            
+        close(fd_memoria);
         //Como no ha sido el banco quien me ha matado le aviso
         snprintf(mensaje,sizeof(mensaje),"0-%d",pid_programa);
         escribirBanco(mensaje);
@@ -245,6 +246,7 @@ void seniales(int senial)
         else
         { snprintf(mensaje,sizeof(mensaje),"Usuario con PID %d saliendo de manera forzada por motivo del banco...",pid_programa);
 
+            close(fd_memoria);
         //Lo motramos por pantalla y lo ponemos en el log
         printf("%s\n",mensaje);
         escribirLog(mensaje);}
@@ -331,6 +333,8 @@ void Menu()
                         break;
                     }
                 }
+
+                close(fd_memoria);
 
                 
             break;
@@ -1052,7 +1056,7 @@ char* obtener_fecha()
 void leerMemoriaCompartida()
 {
     
-    int i,fd_memoria;
+    int i;
     char linea[255],mensaje[255];
 
     
